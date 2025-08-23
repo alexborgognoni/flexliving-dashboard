@@ -1,12 +1,19 @@
-import express from "express";
+
+import express from 'express';
+import cors from 'cors';
+import { propertiesRouter, hostsRouter, guestsRouter, reviewsRouter } from './api';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.get("/", (_req, res) => {
-  res.send("Hello from The Flex Reviews Dashboard 🚀");
-});
+app.use(cors());
+app.use(express.json());
+
+app.use('/api/properties', propertiesRouter);
+app.use('/api/hosts', hostsRouter);
+app.use('/api/guests', guestsRouter);
+app.use('/api/reviews', reviewsRouter);
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
