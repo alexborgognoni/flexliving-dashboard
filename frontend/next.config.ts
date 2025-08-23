@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  turbopack: {
+    root: '/home/alexb/Projects/FlexDashboard/code/frontend'
+  }
 };
 
 export default nextConfig;
