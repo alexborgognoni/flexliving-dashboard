@@ -1,8 +1,10 @@
+import { Router, RequestHandler } from "express";
 
-import { Router } from 'express';
-
-export const createRouter = (controller: any) => {
+export const createRouter = (
+    route: string,
+    controller: RequestHandler,
+): Router => {
     const router = Router();
-    router.get('/', controller);
+    router.get(route, controller);
     return router;
-}
+};
