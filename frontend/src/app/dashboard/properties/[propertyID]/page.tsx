@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { useParams } from "next/navigation";
 import AppHeader from "@/components/layout/AppHeader";
-import PropertyHeader from "@/components/property/PropertyHeader";
 import PropertyInfoCard from "@/components/property/PropertyInfoCard";
 import HostCard from "@/components/property/HostCard";
 import CategoryRatings from "@/components/property/CategoryRatings";
@@ -13,6 +12,7 @@ import ReviewsSection from "@/components/property/ReviewsSection";
 import ReviewDetailsPopover from "@/components/property/ReviewDetailsPopover";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorDisplay from "@/components/ui/ErrorDisplay";
+import { BarChart3, MessageCircle, Star } from "lucide-react";
 
 interface Property {
   id: string;
@@ -99,16 +99,7 @@ function calculateCategoryAverages(reviews: Review[]) {
 
 function createRatingDistribution(reviews: Review[]) {
   const distribution: Record<number, number> = {
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0,
-    8: 0,
-    9: 0,
-    10: 0,
+    1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0,
   };
 
   reviews.forEach((review) => {
@@ -131,9 +122,7 @@ function createTrendData(reviews: Review[]) {
     const date = new Date(review.submitted_at);
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
-    if (!monthlyData[monthKey]) {
-      monthlyData[monthKey] = { ratings: [], month: monthKey };
-    }
+    if (!monthlyData[monthKey]) monthlyData[monthKey] = { ratings: [], month: monthKey };
     monthlyData[monthKey].ratings.push(review.overall_rating);
   });
 
@@ -168,144 +157,94 @@ export default function PropertyInsights() {
         setLoading(false);
       }
     }
-
-    if (propertyId) {
-      loadPropertyData();
-    }
+    if (propertyId) loadPropertyData();
   }, [propertyId]);
 
-  const categoryAverages = useMemo(() => {
-    if (!propertyData?.reviews) return [];
-    return calculateCategoryAverages(propertyData.reviews);
-  }, [propertyData?.reviews]);
-
-  const ratingDistribution = useMemo(() => {
-    if (!propertyData?.reviews) return [];
-    return createRatingDistribution(propertyData.reviews);
-  }, [propertyData?.reviews]);
-
-  const trendData = useMemo(() => {
-    if (!propertyData?.reviews) return [];
-    return createTrendData(propertyData.reviews);
-  }, [propertyData?.reviews]);
+  const categoryAverages = useMemo(() => propertyData ? calculateCategoryAverages(propertyData.reviews) : [], [propertyData?.reviews]);
+  const ratingDistribution = useMemo(() => propertyData ? createRatingDistribution(propertyData.reviews) : [], [propertyData?.reviews]);
+  const trendData = useMemo(() => propertyData ? createTrendData(propertyData.reviews) : [], [propertyData?.reviews]);
 
   const filteredAndSortedReviews = useMemo(() => {
     if (!propertyData?.reviews) return [];
-
-    const filtered = propertyData.reviews.filter(
-      (review) =>
-        review.public_review.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
+    const filtered = propertyData.reviews.filter(r => r.public_review.toLowerCase().includes(searchTerm.toLowerCase()));
     filtered.sort((a, b) => {
       let aValue = (a as any)[sortField];
       let bValue = (b as any)[sortField];
-
-      if (sortField === "submitted_at") {
-        aValue = new Date(aValue).getTime();
-        bValue = new Date(bValue).getTime();
-      } else if (typeof aValue === "string") {
-        aValue = aValue.toLowerCase();
-        bValue = bValue.toLowerCase();
-      }
-
-      if (sortDirection === "asc") {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
+      if (sortField === "submitted_at") { aValue = new Date(aValue).getTime(); bValue = new Date(bValue).getTime(); }
+      else if (typeof aValue === "string") { aValue = aValue.toLowerCase(); bValue = bValue.toLowerCase(); }
+      return sortDirection === "asc" ? (aValue > bValue ? 1 : -1) : (aValue < bValue ? 1 : -1);
     });
-
     return filtered;
   }, [propertyData?.reviews, searchTerm, sortField, sortDirection]);
 
-  const handleSort = useCallback(
-    (field: string) => {
-      if (sortField === field) {
-        setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
-      } else {
-        setSortField(field);
-        setSortDirection("desc");
-      }
-    },
-    [sortField],
-  );
+  const handleSort = useCallback((field: string) => {
+    if (sortField === field) setSortDirection(prev => prev === "asc" ? "desc" : "asc");
+    else { setSortField(field); setSortDirection("desc"); }
+  }, [sortField]);
 
-  const handleToggleStatus = useCallback(
-    (reviewId: string, currentStatus: string) => {
-      console.log(`Toggle status for review ${reviewId} from ${currentStatus}`);
-      if (selectedReview && selectedReview.id === reviewId) {
-        setSelectedReview((prev) => ({
-          ...prev!,
-          status: currentStatus === "published" ? "unpublished" : "published",
-        }));
-      }
-    },
-    [selectedReview],
-  );
+  const handleToggleStatus = useCallback((reviewId: string, currentStatus: string) => {
+    if (selectedReview && selectedReview.id === reviewId) {
+      setSelectedReview(prev => ({ ...prev!, status: currentStatus === "published" ? "unpublished" : "published" }));
+    }
+  }, [selectedReview]);
 
-  const handleReviewClick = useCallback((review: Review) => {
-    setSelectedReview(review);
-  }, []);
-
-  const closePopover = useCallback(() => {
-    setSelectedReview(null);
-  }, []);
+  const handleReviewClick = useCallback((review: Review) => setSelectedReview(review), []);
+  const closePopover = useCallback(() => setSelectedReview(null), []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (selectedReview && !(event.target as Element)?.closest(".review-popover")) {
-        closePopover();
-      }
+      if (selectedReview && !(event.target as Element)?.closest(".review-popover")) closePopover();
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [selectedReview, closePopover]);
 
   if (loading) return <LoadingSpinner />;
-  if (error || !propertyData) {
-    return (
-      <ErrorDisplay
-        message={error || "Property not found"}
-        onRetry={() => window.history.back()}
-      />
-    );
-  }
+  if (error || !propertyData) return <ErrorDisplay message={error || "Property not found"} onRetry={() => window.history.back()} />;
 
   const { property, averageRating, totalReviews } = propertyData;
-
-  // Create propertyData object for components that expect the old format
   const legacyPropertyData = {
     listingId: property.id,
     listingName: property.title,
     address: property.location.address,
     hostName: `Host ${property.host_id}`,
-    propertyImage: property.images[0] || '/placeholder-property.jpg',
+    propertyImage: property.images[0] || "/placeholder-property.jpg",
     reviewCount: totalReviews,
-    averageRating: averageRating,
+    averageRating,
   };
 
   return (
-    <div className="min-h-screen bg-[#fffdf6]">
+    <div className="min-h-screen bg-white">
       <AppHeader />
-      <PropertyHeader listingName={property.title} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-gray-50 to-white border-b border-gray-100 py-16 text-center">
+        <h1 className="text-5xl font-bold text-gray-900 mb-4">{property.title}</h1>
+        <p className="text-lg text-gray-600 mb-6">{property.location.address}, {property.location.city}</p>
+        <div className="flex justify-center gap-6 mt-4">
+          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow">
+            <Star size={20} className="text-yellow-400" />
+            <span className="font-medium">{averageRating.toFixed(1)}</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow">
+            <BarChart3 size={20} />
+            <span className="font-medium">{totalReviews} Reviews</span>
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="space-y-8">
             <PropertyInfoCard propertyData={legacyPropertyData} />
             <HostCard hostName={legacyPropertyData.hostName} />
           </div>
           <div className="lg:col-span-2">
-            <CategoryRatings
-              reviewCount={totalReviews}
-              averageRating={averageRating}
-              categoryAverages={categoryAverages}
-            />
+            <CategoryRatings reviewCount={totalReviews} averageRating={averageRating} categoryAverages={categoryAverages} />
           </div>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <RatingDistributionChart data={ratingDistribution} />
           <RatingTrendChart data={trendData} />
         </div>
