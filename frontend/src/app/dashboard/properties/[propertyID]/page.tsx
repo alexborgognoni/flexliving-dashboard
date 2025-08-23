@@ -13,66 +13,47 @@ import ReviewDetailsPopover from "@/components/property/ReviewDetailsPopover";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorDisplay from "@/components/ui/ErrorDisplay";
 import { BarChart3, MessageCircle, Star } from "lucide-react";
-
-interface Property {
-  id: string;
-  title: string;
-  description: string;
-  location: {
-    address: string;
-    city: string;
-    neighborhood: string;
-  };
-  images: string[];
-  host_id: string;
-}
-
-interface Review {
-  id: string;
-  public_review: string;
-  overall_rating: number;
-  submitted_at: string;
-  ratings: {
-    cleanliness: number;
-    communication: number;
-    check_in_experience: number;
-    listing_accuracy: number;
-    amenities: number;
-    location: number;
-    value_for_money: number;
-  };
-  guest_id: string;
-  status: string;
-}
+import { fetchProperty, fetchPropertyReviews, getHostName, getGuestName, Property, Review, ReviewWithNames } from "@/lib/api";
 
 interface PropertyData {
   property: Property;
-  reviews: Review[];
+  reviews: ReviewWithNames[];
   averageRating: number;
   totalReviews: number;
+  hostName: string;
 }
 
 async function fetchPropertyData(propertyId: string): Promise<PropertyData> {
-  const [propertyRes, reviewsRes] = await Promise.all([
-    fetch(`http://localhost:8000/api/properties/${propertyId}`),
-    fetch(`http://localhost:8000/api/properties/${propertyId}/reviews`)
+  const [property, reviewsData] = await Promise.all([
+    fetchProperty(propertyId),
+    fetchPropertyReviews(propertyId)
   ]);
 
-  if (!propertyRes.ok) throw new Error("Failed to fetch property");
-  if (!reviewsRes.ok) throw new Error("Failed to fetch reviews");
+  if (!property) throw new Error("Property not found");
 
-  const property = await propertyRes.json();
-  const reviewsData = await reviewsRes.json();
+  const hostName = await getHostName(property.host_id);
+  const reviews: ReviewWithNames[] = [];
+
+  // Fetch guest names for all reviews
+  for (const review of reviewsData.data) {
+    const guestName = await getGuestName(review.guest_id);
+    reviews.push({
+      ...review,
+      guest_name: guestName,
+      host_name: hostName
+    });
+  }
 
   return {
-    property: property.data,
-    reviews: reviewsData.data.map((review: any) => ({ ...review, status: review.status || "published" })),
-    averageRating: reviewsData.meta.averageRating,
-    totalReviews: reviewsData.meta.totalCount
+    property,
+    reviews,
+    averageRating: reviewsData.meta.averageRating || property.rating || 0,
+    totalReviews: reviewsData.meta.totalCount,
+    hostName
   };
 }
 
-function calculateCategoryAverages(reviews: Review[]) {
+function calculateCategoryAverages(reviews: ReviewWithNames[]) {
   const categoryTotals: Record<string, number> = {};
   const categoryCounts: Record<string, number> = {};
 
@@ -97,7 +78,7 @@ function calculateCategoryAverages(reviews: Review[]) {
   }));
 }
 
-function createRatingDistribution(reviews: Review[]) {
+function createRatingDistribution(reviews: ReviewWithNames[]) {
   const distribution: Record<number, number> = {
     1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0,
   };
@@ -115,7 +96,7 @@ function createRatingDistribution(reviews: Review[]) {
   }));
 }
 
-function createTrendData(reviews: Review[]) {
+function createTrendData(reviews: ReviewWithNames[]) {
   const monthlyData: Record<string, { ratings: number[]; month: string }> = {};
 
   reviews.forEach((review) => {
@@ -144,7 +125,7 @@ export default function PropertyInsights() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState("submitted_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+  const [selectedReview, setSelectedReview] = useState<ReviewWithNames | null>(null);
 
   useEffect(() => {
     async function loadPropertyData() {
@@ -188,7 +169,7 @@ export default function PropertyInsights() {
     }
   }, [selectedReview]);
 
-  const handleReviewClick = useCallback((review: Review) => setSelectedReview(review), []);
+  const handleReviewClick = useCallback((review: ReviewWithNames) => setSelectedReview(review), []);
   const closePopover = useCallback(() => setSelectedReview(null), []);
 
   useEffect(() => {
@@ -207,7 +188,7 @@ export default function PropertyInsights() {
     listingId: property.id,
     listingName: property.title,
     address: property.location.address,
-    hostName: `Host ${property.host_id}`,
+    hostName: propertyData.hostName,
     propertyImage: property.images[0] || "/placeholder-property.jpg",
     reviewCount: totalReviews,
     averageRating,

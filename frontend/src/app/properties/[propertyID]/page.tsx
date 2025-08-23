@@ -35,59 +35,42 @@ import {
 } from "lucide-react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorDisplay from "@/components/ui/ErrorDisplay";
-
-interface Property {
-  id: string;
-  title: string;
-  description: string;
-  location: {
-    address: string;
-    city: string;
-    neighborhood: string;
-  };
-  images: string[];
-  host_id: string;
-  amenities: string[];
-  stay_policies: {
-    check_in: string;
-    check_out: string;
-    house_rules: string[];
-  };
-}
-
-interface Review {
-  id: string;
-  public_review: string;
-  overall_rating: number;
-  submitted_at: string;
-  guest_id: string;
-  status: string;
-}
+import { fetchProperty, fetchPropertyReviews, getHostName, getGuestName, Property as APIProperty, Review, ReviewWithNames } from "@/lib/api";
 
 interface PropertyData {
-  property: Property;
-  reviews: Review[];
+  property: APIProperty;
+  reviews: ReviewWithNames[];
   averageRating: number;
   totalReviews: number;
+  hostName: string;
 }
 
 async function fetchPropertyData(propertyId: string): Promise<PropertyData> {
-  const [propertyRes, reviewsRes] = await Promise.all([
-    fetch(`http://localhost:8000/api/properties/${propertyId}`),
-    fetch(`http://localhost:8000/api/properties/${propertyId}/reviews`),
+  const [property, reviewsData] = await Promise.all([
+    fetchProperty(propertyId),
+    fetchPropertyReviews(propertyId)
   ]);
 
-  if (!propertyRes.ok) throw new Error("Failed to fetch property");
-  if (!reviewsRes.ok) throw new Error("Failed to fetch reviews");
+  if (!property) throw new Error("Property not found");
 
-  const property = await propertyRes.json();
-  const reviewsData = await reviewsRes.json();
+  const hostName = await getHostName(property.host_id);
+  const reviews: ReviewWithNames[] = [];
+
+  for (const review of reviewsData.data) {
+    const guestName = await getGuestName(review.guest_id);
+    reviews.push({
+      ...review,
+      guest_name: guestName,
+      host_name: hostName
+    });
+  }
 
   return {
-    property: property.data,
-    reviews: reviewsData.data,
-    averageRating: reviewsData.meta.averageRating,
+    property,
+    reviews,
+    averageRating: reviewsData.meta.averageRating || property.rating || 0,
     totalReviews: reviewsData.meta.totalCount,
+    hostName
   };
 }
 
@@ -447,7 +430,7 @@ export default function PublicPropertyPage() {
                             </div>
                             <div>
                               <h4 className="font-medium text-[#333333]">
-                                Guest {review.guest_id}
+                                {review.guest_name || `Guest ${review.guest_id}`}
                               </h4>
                               <div className="text-sm text-[#5C5C5A]">
                                 {new Date(

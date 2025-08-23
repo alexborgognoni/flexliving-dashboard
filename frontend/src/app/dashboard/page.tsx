@@ -9,36 +9,12 @@ import {
   Filter,
 } from "lucide-react";
 import AppHeader from "@/components/layout/AppHeader";
+import { fetchProperties, fetchPropertyReviews, getHostName, PropertyWithNames } from "@/lib/api";
 
-interface Property {
-  id: string;
-  title: string;
-  description: string;
-  location: {
-    address: string;
-    city: string;
-  };
-  images: string[];
-  host_id: string;
-}
-
-interface PropertyWithReviews extends Property {
+interface PropertyWithReviews extends PropertyWithNames {
   reviewCount: number;
   averageRating: number;
   trend: "up" | "down" | "stable";
-}
-
-async function fetchProperties(): Promise<Property[]> {
-  const res = await fetch("http://localhost:8000/api/properties");
-  if (!res.ok) throw new Error("Failed to fetch properties");
-  const data = await res.json();
-  return data.data || [];
-}
-
-async function fetchPropertyReviews(propertyId: string) {
-  const res = await fetch(`http://localhost:8000/api/properties/${propertyId}/reviews`);
-  if (!res.ok) return { data: [], meta: { totalCount: 0, averageRating: 0 } };
-  return await res.json();
 }
 
 export default function DashboardPage() {
@@ -55,11 +31,16 @@ export default function DashboardPage() {
         const propertiesWithReviews: PropertyWithReviews[] = [];
 
         for (const property of propertiesData) {
-          const reviewsData = await fetchPropertyReviews(property.id);
+          const [reviewsData, hostName] = await Promise.all([
+            fetchPropertyReviews(property.id),
+            getHostName(property.host_id)
+          ]);
+
           propertiesWithReviews.push({
             ...property,
+            host_name: hostName,
             reviewCount: reviewsData.meta.totalCount,
-            averageRating: reviewsData.meta.averageRating,
+            averageRating: reviewsData.meta.averageRating || property.rating || 0,
             trend: "stable" as const,
           });
         }
@@ -172,7 +153,7 @@ export default function DashboardPage() {
                       </div>
                     </td>
                     <td className="py-4 px-6 text-[#333333] font-medium">{property.location.address}</td>
-                    <td className="py-4 px-6 text-[#333333] font-medium">Host ID: {property.host_id}</td>
+                    <td className="py-4 px-6 text-[#333333] font-medium">{property.host_name || `Host ${property.host_id}`}</td>
                     <td className="py-4 px-6 flex items-center gap-2">
                       <Star size={16} className="text-yellow-400 fill-current" />
                       <span className="font-medium text-[#333333]">{property.averageRating.toFixed(1)}</span>
