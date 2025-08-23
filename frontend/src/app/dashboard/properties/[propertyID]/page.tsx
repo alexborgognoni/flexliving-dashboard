@@ -169,6 +169,17 @@ export default function PropertyInsights() {
     }
   }, [selectedReview]);
 
+  const handleReviewUpdate = useCallback((updatedReview: ReviewWithNames) => {
+    setSelectedReview(updatedReview);
+    setPropertyData(prevData => {
+      if (!prevData) return prevData;
+      const updatedReviews = prevData.reviews.map(review => 
+        review.id === updatedReview.id ? updatedReview : review
+      );
+      return { ...prevData, reviews: updatedReviews };
+    });
+  }, []);
+
   const handleReviewClick = useCallback((review: ReviewWithNames) => setSelectedReview(review), []);
   const closePopover = useCallback(() => setSelectedReview(null), []);
 
@@ -247,6 +258,7 @@ export default function PropertyInsights() {
           review={selectedReview}
           onClose={closePopover}
           onToggleStatus={handleToggleStatus}
+          onReviewUpdate={handleReviewUpdate}
         />
       )}
     </div>

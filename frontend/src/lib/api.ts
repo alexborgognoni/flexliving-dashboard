@@ -156,3 +156,25 @@ export interface ReviewWithNames extends Review {
   guest_name?: string;
   host_name?: string;
 }
+
+export async function updateReviewStatus(reviewId: string, status: string): Promise<{ success: boolean; review?: ReviewWithNames; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return { success: false, error: errorData.message || 'Failed to update review status' };
+    }
+
+    const data = await response.json();
+    return { success: true, review: data.data };
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update review status' };
+  }
+}

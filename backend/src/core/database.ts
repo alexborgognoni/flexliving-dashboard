@@ -126,7 +126,7 @@ const normalizeHostawayReview = async (hostawayReview: any): Promise<Review | nu
   }
 
   // Set status (for demo, publish only originally published reviews)
-  let reviewStatus = 'pending';
+  let reviewStatus = 'unpublished';
   if (hostawayReview.status === 'published') {
     reviewStatus = 'published';
   }

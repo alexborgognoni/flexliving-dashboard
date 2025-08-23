@@ -1,4 +1,10 @@
-import { createRouter } from "../../core/router";
-import { getReviewsController, getReviewByIdController } from "./reviews.controller";
+import { Router } from "express";
+import { getReviewsController, getReviewByIdController, updateReviewStatusController } from "./reviews.controller";
 
-export default createRouter("/reviews", getReviewsController, getReviewByIdController);
+const router = Router();
+
+router.get("/reviews", getReviewsController);
+router.get("/reviews/:id", getReviewByIdController);
+router.patch("/reviews/:id/status", updateReviewStatusController);
+
+export default router;
