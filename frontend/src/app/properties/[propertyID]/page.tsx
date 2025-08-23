@@ -24,6 +24,14 @@ import {
   PawPrint,
   PartyPopper,
   CalendarClock,
+  Sofa,
+  Network,
+  UtensilsCrossed,
+  WashingMachine,
+  Thermometer,
+  CalendarCheck,
+  MessageCircle,
+  ChevronDown,
 } from "lucide-react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorDisplay from "@/components/ui/ErrorDisplay";
@@ -218,45 +226,73 @@ export default function PublicPropertyPage() {
             {/* Left Column */}
             <div className="lg:col-span-2 space-y-8">
               {/* About */}
-              <div className="bg-white rounded-lg p-6 shadow-lg">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              <div className="rounded-lg text-card-foreground mb-8 p-6 bg-white border-0 shadow-lg">
+                <h2 className="text-2xl font-semibold mb-4 text-[#333333]">
                   About this property
                 </h2>
-                <p className="text-gray-700 leading-relaxed">
-                  {property.description ||
-                    "Experience comfort and style in this beautifully furnished property. Perfect for business travelers, families, or anyone seeking a premium stay with all the amenities you need."}
-                </p>
+                <div className="space-y-4">
+                  <p className="text-[#5C5C5A] whitespace-pre-line leading-relaxed">
+                    {property.description ||
+                      "Experience comfort and style in this beautifully furnished property. Perfect for business travelers, families, or anyone seeking a premium stay with all the amenities you need."}
+                  </p>
+                </div>
               </div>
 
               {/* Amenities */}
-              <div className="bg-white rounded-lg p-6 shadow-lg">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Amenities
-                </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="flex items-center gap-3">
-                    <Wifi size={20} className="text-gray-600" />
-                    <span className="text-gray-700">Free WiFi</span>
+              <div className="rounded-lg text-card-foreground p-6 mb-12 bg-white border-0 shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-semibold text-[#333333]">
+                    Amenities
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="flex items-center gap-3 text-[#5C5C5A]">
+                    <div className="p-2 rounded-full">
+                      <Sofa className="h-4 w-4" />
+                    </div>
+                    <span className="capitalize">Cable TV</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Car size={20} className="text-gray-600" />
-                    <span className="text-gray-700">Parking</span>
+                  <div className="flex items-center gap-3 text-[#5C5C5A]">
+                    <div className="p-2 rounded-full">
+                      <Network className="h-4 w-4" />
+                    </div>
+                    <span className="capitalize">Internet</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Coffee size={20} className="text-gray-600" />
-                    <span className="text-gray-700">Kitchen</span>
+                  <div className="flex items-center gap-3 text-[#5C5C5A]">
+                    <div className="p-2 rounded-full">
+                      <Wifi className="h-4 w-4" />
+                    </div>
+                    <span className="capitalize">Wireless</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Tv size={20} className="text-gray-600" />
-                    <span className="text-gray-700">TV</span>
+                  <div className="flex items-center gap-3 text-[#5C5C5A]">
+                    <span className="capitalize">Air conditioning</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Wind size={20} className="text-gray-600" />
-                    <span className="text-gray-700">Air Conditioning</span>
+                  <div className="flex items-center gap-3 text-[#5C5C5A]">
+                    <div className="p-2 rounded-full">
+                      <UtensilsCrossed className="h-4 w-4" />
+                    </div>
+                    <span className="capitalize">Kitchen</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Shirt size={20} className="text-gray-600" />
-                    <span className="text-gray-700">Washer & Dryer</span>
+                  <div className="flex items-center gap-3 text-[#5C5C5A]">
+                    <div className="p-2 rounded-full">
+                      <WashingMachine className="h-4 w-4" />
+                    </div>
+                    <span className="capitalize">Washing Machine</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[#5C5C5A]">
+                    <span className="capitalize">Dryer</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[#5C5C5A]">
+                    <div className="p-2 rounded-full">
+                      <Wind className="h-4 w-4" />
+                    </div>
+                    <span className="capitalize">Hair Dryer</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[#5C5C5A]">
+                    <div className="p-2 rounded-full">
+                      <Thermometer className="h-4 w-4" />
+                    </div>
+                    <span className="capitalize">Heating</span>
                   </div>
                 </div>
               </div>
@@ -378,18 +414,18 @@ export default function PublicPropertyPage() {
               </div>
 
               {/* Reviews */}
-              <div className="bg-white rounded-lg p-6 shadow-lg">
+              <div className="rounded-lg text-card-foreground p-6 mb-8 bg-white border-0 shadow-lg">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-2xl font-semibold text-[#333333]">
                     Guest Reviews
                   </h2>
                   {publishedReviews.length > 0 ? (
                     <div className="flex items-center gap-2">
                       <Star size={20} className="text-yellow-400 fill-current" />
-                      <span className="text-lg font-medium">
+                      <span className="text-lg font-medium text-[#333333]">
                         {averageRating.toFixed(1)}
                       </span>
-                      <span className="text-gray-600">
+                      <span className="text-[#5C5C5A]">
                         ({publishedReviews.length} review
                         {publishedReviews.length !== 1 ? "s" : ""})
                       </span>
@@ -402,18 +438,18 @@ export default function PublicPropertyPage() {
                     {publishedReviews.slice(0, 6).map((review) => (
                       <div
                         key={review.id}
-                        className="bg-[#f9fafb] rounded-lg p-4 border border-gray-100"
+                        className="bg-[#F1F3EE] rounded-lg p-4 border border-gray-100"
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-[#284e4c] rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-[#284E4C] rounded-full flex items-center justify-center">
                               <User size={16} className="text-white" />
                             </div>
                             <div>
-                              <h4 className="font-medium text-gray-900">
+                              <h4 className="font-medium text-[#333333]">
                                 Guest {review.guest_id}
                               </h4>
-                              <div className="text-sm text-gray-600">
+                              <div className="text-sm text-[#5C5C5A]">
                                 {new Date(
                                   review.submitted_at,
                                 ).toLocaleDateString()}
@@ -425,21 +461,21 @@ export default function PublicPropertyPage() {
                               size={16}
                               className="text-yellow-400 fill-current"
                             />
-                            <span className="font-medium">
+                            <span className="font-medium text-[#333333]">
                               {review.overall_rating.toFixed(1)}
                             </span>
                           </div>
                         </div>
-                        <p className="text-gray-700 leading-relaxed">
+                        <p className="text-[#5C5C5A] leading-relaxed">
                           {review.public_review}
                         </p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-[#f9fafb] rounded-lg p-6 border border-gray-100 text-center">
-                    <p className="text-gray-500 text-lg mb-2">No reviews yet</p>
-                    <p className="text-gray-400 text-sm">
+                  <div className="bg-[#F1F3EE] rounded-lg p-6 border border-gray-100 text-center">
+                    <p className="text-[#5C5C5A] text-lg mb-2">No reviews yet</p>
+                    <p className="text-[#5C5C5A] text-sm">
                       Be the first to leave a review for this property!
                     </p>
                   </div>
@@ -449,37 +485,63 @@ export default function PublicPropertyPage() {
 
             {/* Booking Sidebar */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg p-6 shadow-lg sticky top-8 mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                  Book your stay
-                </h3>
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Check-in & Check-out
-                    </label>
-                    <div className="border border-gray-300 rounded-lg p-3 flex items-center gap-2">
-                      <Calendar size={16} className="text-gray-400" />
-                      <span className="text-gray-600">Select dates</span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Guests
-                    </label>
-                    <div className="border border-gray-300 rounded-lg p-3 flex items-center gap-2">
-                      <Users size={16} className="text-gray-400" />
-                      <span className="text-gray-600">1 guest</span>
-                    </div>
+              <div className="text-card-foreground sticky top-24 overflow-hidden bg-white border-0 shadow-lg rounded-2xl mb-6">
+                <div className="relative overflow-hidden">
+                  <div className="absolute inset-0 bg-[#284E4C]"></div>
+                  <div className="relative p-6">
+                    <h3 className="text-lg font-semibold text-[#FFFFFF] mb-1">
+                      Book your stay
+                    </h3>
+                    <p className="text-sm text-[#D2DADA]">
+                      Select dates to see the total price
+                    </p>
                   </div>
                 </div>
-                <button className="w-full bg-[#284e4c] text-white py-3 rounded-lg font-medium hover:bg-[#284e4c]/90 transition-colors mb-4">
-                  Check availability
-                </button>
-                <button className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
-                  <Phone size={16} />
-                  Send inquiry
-                </button>
+                <div className="p-6 pt-4">
+                  <div className="space-y-1">
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <div className="grid w-full h-full">
+                          <button
+                            className="inline-flex items-center whitespace-nowrap text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-gray-300 px-4 py-2 w-full h-[42px] justify-start text-left font-normal bg-white shadow-sm transition-colors rounded-l-md rounded-r-none text-[#333333] hover:bg-gray-100"
+                            type="button"
+                          >
+                            <Calendar className="mr-2 h-4 w-4 text-[#333333]" />
+                            <span>Select dates</span>
+                          </button>
+                        </div>
+                      </div>
+                      <div className="w-[120px]">
+                        <button
+                          type="button"
+                          className="flex w-full items-center justify-between rounded-md border border-gray-300 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-[42px] bg-white shadow-sm hover:bg-gray-100 transition-colors text-[#333333] rounded-l-none rounded-r-md"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-[#333333]" />
+                            <span>1</span>
+                          </div>
+                          <ChevronDown className="h-4 w-4 opacity-50 text-[#333333]" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3 pt-6">
+                    <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-12 rounded-md px-8 w-full bg-[#284E4C] hover:bg-[#284E4C]/90 text-white shadow-lg hover:shadow-xl transition-all duration-200">
+                      <CalendarCheck className="mr-2 h-4 w-4" />
+                      <span>Check availability</span>
+                    </button>
+                    <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-[#284E4C]/20 bg-white shadow-sm h-12 rounded-md px-8 w-full text-[#284E4C] hover:bg-[#f5f5f5] hover:border-[#284E4C]/30">
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      <span>Send Inquiry</span>
+                    </button>
+                  </div>
+                  <p className="text-sm text-[#5C5C5A] text-center mt-4">
+                    <span className="inline-flex items-center gap-1">
+                      <Shield className="h-3 w-3" />
+                      <span>Instant confirmation</span>
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
