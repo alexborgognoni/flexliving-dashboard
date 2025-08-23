@@ -214,11 +214,11 @@ export default function PropertyInsights() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#fffdf6]">
       <AppHeader />
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-gray-50 to-white border-b border-gray-100 py-16 text-center">
+      <div className="bg-gradient-to-br from-gray-50 to-[#f1f3ee] border-b border-gray-100 py-16 text-center">
         <h1 className="text-5xl font-bold text-gray-900 mb-4">{property.title}</h1>
         <p className="text-lg text-gray-600 mb-6">{property.location.address}, {property.location.city}</p>
         <div className="flex justify-center gap-6 mt-4">
