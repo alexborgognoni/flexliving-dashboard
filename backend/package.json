@@ -1,10 +1,10 @@
 {
-  "name": "theflex_reviews_dashboard",
+  "name": "theflex_reviews_dashboard_backend",
   "version": "1.0.0",
   "description": "Property Reviews Dashboard for The Flex",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc"
   },
   "author": "Alex Borgognoni",
