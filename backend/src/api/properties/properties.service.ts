@@ -1,14 +1,13 @@
 
-import { getData } from '../../core/service';
-import { Property, Review } from '../../core/types';
+import { getData, getById, getReviewsForProperty } from '../../core/service';
+import { Property } from '../../core/types';
 
 export const getProperties = (query: any) => {
     return getData<Property>('properties', query);
 }
 
 export const getPropertyById = async (id: string) => {
-    const properties = await getData<Property>('properties', {});
-    const property = properties.data.find(p => p.id === id);
+    const property = await getById<Property>('properties', id);
     return {
         status: 'success',
         data: property
@@ -16,15 +15,17 @@ export const getPropertyById = async (id: string) => {
 }
 
 export const getPropertyReviews = async (propertyId: string) => {
-    const reviews = await getData<Review>('reviews', {});
-    const propertyReviews = reviews.data.filter(r => r.listing_id === propertyId);
+    const reviews = await getReviewsForProperty(propertyId);
+    const publishedReviews = reviews.filter(r => r.status === 'published');
+    
     return {
         status: 'success',
-        data: propertyReviews,
+        data: reviews,
         meta: {
-            totalCount: propertyReviews.length,
-            averageRating: propertyReviews.length > 0 
-                ? propertyReviews.reduce((sum, r) => sum + r.overall_rating, 0) / propertyReviews.length
+            totalCount: reviews.length,
+            publishedCount: publishedReviews.length,
+            averageRating: publishedReviews.length > 0 
+                ? publishedReviews.reduce((sum, r) => sum + r.overall_rating, 0) / publishedReviews.length
                 : 0
         }
     }

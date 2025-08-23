@@ -1,0 +1,120 @@
+const properties = [
+  {
+    id: "423374",
+    title: "Appartement 2 Chambres Spacieux à Dély Ibrahim",
+    description: "Situé dans l'un des quartiers les plus prisés d'Alger, cet appartement lumineux et accueillant offre un parfait équilibre entre confort et praticité.",
+    location: {
+      channel: "hostaway",
+      city: "Alger",
+      neighborhood: "Dély Ibrahim",
+      address: "12 Rue du Parc, Dély Ibrahim, Alger, Algeria"
+    },
+    type: "apartment",
+    bedrooms: 2,
+    images: [
+      "https://hostaway-platform.s3.us-west-2.amazonaws.com/listing/130510-423374-ehEYHkYIbdS3rYCkPqrSM--e-1U3iCeLkO1Nr0jvbGN8-68a30bb643d5d"
+    ],
+    amenities: ["wifi", "kitchen"],
+    price: {
+      amount: 1500,
+      currency: "EUR"
+    },
+    availability: {
+      calendar: [
+        { date: "2025-08-23", available: true },
+        { date: "2025-08-24", available: false }
+      ]
+    },
+    host_id: "60001",
+    stay_policies: {
+      check_in: "15:00",
+      check_out: "10:00",
+      house_rules: [
+        "no_smoking",
+        "no_pets",
+        "no_parties_or_events",
+        "security_deposit_required"
+      ]
+    },
+    rating: null // Will be computed on startup
+  },
+  {
+    id: "D-1001",
+    title: "Charming Studio in Central Paris",
+    description: "A modern studio with balcony and full kitchen, located steps from the Louvre and cafes.",
+    location: {
+      channel: "direct",
+      city: "Paris",
+      neighborhood: "1er arrondissement",
+      address: "15 Rue de Rivoli, 75001 Paris, France"
+    },
+    type: "studio",
+    bedrooms: 1,
+    images: [
+      "https://direct-booking.example.com/images/listing/D-1001/1.jpg",
+      "https://direct-booking.example.com/images/listing/D-1001/2.jpg"
+    ],
+    amenities: ["wifi", "kitchen", "balcony", "washer"],
+    price: {
+      amount: 120,
+      currency: "EUR"
+    },
+    availability: {
+      calendar: [
+        { date: "2025-08-23", available: true },
+        { date: "2025-08-24", available: true }
+      ]
+    },
+    host_id: "H-2001",
+    stay_policies: {
+      check_in: "16:00",
+      check_out: "11:00",
+      house_rules: [
+        "no_smoking",
+        "no_pets"
+      ]
+    },
+    rating: null // Will be computed on startup
+  },
+  {
+    id: "AB-5005",
+    title: "Cozy 3BR Villa with Pool in Lisbon",
+    description: "Beautiful villa with private pool and garden, perfect for families or groups, 10 minutes from downtown Lisbon.",
+    location: {
+      channel: "airbnb",
+      city: "Lisbon",
+      neighborhood: "Alcântara",
+      address: "Rua da Boavista, 25, 1300-123 Lisboa, Portugal"
+    },
+    type: "villa",
+    bedrooms: 3,
+    images: [
+      "https://airbnb-platform.s3.eu-west-1.amazonaws.com/listings/AB-5005/1.jpg",
+      "https://airbnb-platform.s3.eu-west-1.amazonaws.com/listings/AB-5005/2.jpg"
+    ],
+    amenities: ["wifi", "kitchen", "pool", "parking", "air conditioning"],
+    price: {
+      amount: 350,
+      currency: "EUR"
+    },
+    availability: {
+      calendar: [
+        { date: "2025-08-23", available: false },
+        { date: "2025-08-24", available: true }
+      ]
+    },
+    host_id: "H-3003",
+    stay_policies: {
+      check_in: "15:00",
+      check_out: "10:00",
+      house_rules: [
+        "no_smoking",
+        "no_parties_or_events",
+        "security_deposit_required"
+      ]
+    },
+    rating: null // Will be computed on startup
+  }
+];
+
+module.exports = properties;

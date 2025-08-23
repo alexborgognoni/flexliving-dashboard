@@ -1,4 +1,4 @@
-[
+const hosts = [
   {
     "id": "60001",
     "name": "Ahmed Benali",
@@ -137,4 +137,6 @@
     "avatar_url": "https://www.gettyimages.com/photos/lily-k%C3%B6nig",
     "joined_at": "2020-11-29T00:00:00Z"
   }
-]
+];
+
+module.exports = hosts;

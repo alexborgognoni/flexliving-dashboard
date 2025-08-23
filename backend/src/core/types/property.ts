@@ -70,4 +70,5 @@ export interface Property {
     check_out: string;
     house_rules: HouseRule[];
   };
+  rating?: number; // Average rating computed from published reviews
 }

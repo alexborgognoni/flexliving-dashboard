@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { initializeDatabase } from "./core/database";
 import {
   propertiesRouter,
   hostsRouter,
@@ -22,6 +23,19 @@ app.use("/api", hostsRouter);
 app.use("/api", guestsRouter);
 app.use("/api", reviewsRouter);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// Initialize database and start server
+const startServer = async () => {
+  try {
+    console.log('Starting server initialization...');
+    await initializeDatabase();
+    
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

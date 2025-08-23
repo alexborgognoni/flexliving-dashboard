@@ -1,0 +1,215 @@
+const reviews_hostaway = {
+  "status": "success",
+  "result": [
+    {
+      "id": 4821,
+      "type": "guest-to-host",
+      "status": "published",
+      "rating": 9,
+      "publicReview": "Wonderful stay, very clean and convenient location.",
+      "reviewCategory": [
+        {
+          "category": "cleanliness",
+          "rating": 10
+        },
+        {
+          "category": "communication",
+          "rating": 9
+        },
+        {
+          "category": "location",
+          "rating": 9
+        }
+      ],
+      "submittedAt": "2025-08-23T10:15:00Z",
+      "guestName": "Amelia Clark",
+      "listingName": "Apartment in City 15"
+    },
+    {
+      "id": 3967,
+      "type": "guest-to-host",
+      "status": "submitted",
+      "rating": null,
+      "publicReview": "Good check-in experience but the amenities were limited.",
+      "reviewCategory": [
+        {
+          "category": "check_in_experience",
+          "rating": 8
+        },
+        {
+          "category": "amenities",
+          "rating": 6
+        }
+      ],
+      "submittedAt": "2025-08-22T14:30:00Z",
+      "guestName": "Ava Richardson",
+      "listingName": "Apartment in City 22"
+    },
+    {
+      "id": 1582,
+      "type": "guest-to-host",
+      "status": "approved",
+      "rating": 7,
+      "publicReview": "Nice property, communication could be faster.",
+      "reviewCategory": [
+        {
+          "category": "communication",
+          "rating": 6
+        },
+        {
+          "category": "value_for_money",
+          "rating": 7
+        }
+      ],
+      "submittedAt": "2025-08-21T11:15:00Z",
+      "guestName": "Benjamin Harris",
+      "listingName": "Loft in City 13"
+    },
+    {
+      "id": 2849,
+      "type": "guest-to-host",
+      "status": "published",
+      "rating": 10,
+      "publicReview": "Excellent stay! Host was super responsive.",
+      "reviewCategory": [
+        {
+          "category": "communication",
+          "rating": 10
+        },
+        {
+          "category": "cleanliness",
+          "rating": 9
+        },
+        {
+          "category": "check_in_experience",
+          "rating": 10
+        }
+      ],
+      "submittedAt": "2025-08-20T16:50:00Z",
+      "guestName": "Charlotte Harris",
+      "listingName": "House in City 12"
+    },
+    {
+      "id": 4517,
+      "type": "guest-to-host",
+      "status": "rejected",
+      "rating": 8,
+      "publicReview": "Cozy apartment, a bit noisy outside.",
+      "reviewCategory": [
+        {
+          "category": "location",
+          "rating": 7
+        },
+        {
+          "category": "cleanliness",
+          "rating": 8
+        }
+      ],
+      "submittedAt": "2025-08-19T12:10:00Z",
+      "guestName": "Emma Cooper",
+      "listingName": "Apartment in City 26"
+    },
+    {
+      "id": 3290,
+      "type": "guest-to-host",
+      "status": "approved",
+      "rating": null,
+      "publicReview": "Great host and easy check-in.",
+      "reviewCategory": [
+        {
+          "category": "check_in_experience",
+          "rating": 9
+        },
+        {
+          "category": "communication",
+          "rating": 8
+        }
+      ],
+      "submittedAt": "2025-08-18T09:40:00Z",
+      "guestName": "Ethan Wright",
+      "listingName": "House in City 14"
+    },
+    {
+      "id": 5673,
+      "type": "guest-to-host",
+      "status": "submitted",
+      "rating": 6,
+      "publicReview": "Property was okay, but missing some amenities.",
+      "reviewCategory": [
+        {
+          "category": "amenities",
+          "rating": 5
+        },
+        {
+          "category": "value_for_money",
+          "rating": 7
+        }
+      ],
+      "submittedAt": "2025-08-17T15:20:00Z",
+      "guestName": "Lucas James",
+      "listingName": "Loft in City 27"
+    },
+    {
+      "id": 4129,
+      "type": "guest-to-host",
+      "status": "published",
+      "rating": 9,
+      "publicReview": "Host was very accommodating.",
+      "reviewCategory": [
+        {
+          "category": "communication",
+          "rating": 10
+        },
+        {
+          "category": "cleanliness",
+          "rating": 8
+        }
+      ],
+      "submittedAt": "2025-08-16T11:05:00Z",
+      "guestName": "Mason Young",
+      "listingName": "Apartment in City 28"
+    },
+    {
+      "id": 6894,
+      "type": "guest-to-host",
+      "status": "approved",
+      "rating": null,
+      "publicReview": "Overall good, minor issues with check-in.",
+      "reviewCategory": [
+        {
+          "category": "check_in_experience",
+          "rating": 6
+        },
+        {
+          "category": "location",
+          "rating": 8
+        }
+      ],
+      "submittedAt": "2025-08-15T13:55:00Z",
+      "guestName": "Olivia King",
+      "listingName": "Studio in City 100"
+    },
+    {
+      "id": 2347,
+      "type": "guest-to-host",
+      "status": "rejected",
+      "rating": 8,
+      "publicReview": "Nice place and responsive host.",
+      "reviewCategory": [
+        {
+          "category": "communication",
+          "rating": 9
+        },
+        {
+          "category": "cleanliness",
+          "rating": 8
+        }
+      ],
+      "submittedAt": "2025-08-14T10:25:00Z",
+      "guestName": "Sophia Nelson",
+      "listingName": "Villa in City 1"
+    }
+  ]
+};
+
+module.exports = reviews_hostaway;
