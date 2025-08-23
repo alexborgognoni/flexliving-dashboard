@@ -38,10 +38,31 @@ export const getReviews = async (query: any) => {
         });
     }
 
+    const totalCount = filteredData.length;
     const paginatedData = filteredData.slice(offset, offset + limit);
 
     return {
         status: 'success',
         data: paginatedData,
+        meta: {
+            totalCount,
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            hasMore: (parseInt(offset) + parseInt(limit)) < totalCount,
+            sortBy,
+            order,
+            filters
+        }
     };
+}
+
+export const getReviewById = async (id: string) => {
+    const hostawayReviews = await getHostawayReviews();
+    const allReviews = [...hostawayReviews];
+    
+    const review = allReviews.find(r => r.id === id);
+    return {
+        status: 'success',
+        data: review
+    }
 }

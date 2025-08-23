@@ -1,4 +1,4 @@
 import { createRouter } from "../../core/router";
-import { getHostsController } from "./hosts.controller";
+import { getHostsController, getHostByIdController } from "./hosts.controller";
 
-export default createRouter("/hosts", getHostsController);
+export default createRouter("/hosts", getHostsController, getHostByIdController);

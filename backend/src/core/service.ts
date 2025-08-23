@@ -2,7 +2,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-export const getData = async <T>(entityName: string, query: any): Promise<{ status: string; data: T[]; }> => {
+export const getData = async <T>(entityName: string, query: any): Promise<{ status: string; data: T[]; meta: any; }> => {
     const { sortBy, order = 'asc', limit = 10, offset = 0, ...filters } = query;
 
     const dataPath = path.join(__dirname, 'data', `${entityName}.json`);
@@ -33,10 +33,20 @@ export const getData = async <T>(entityName: string, query: any): Promise<{ stat
         });
     }
 
+    const totalCount = filteredData.length;
     const paginatedData = filteredData.slice(offset, offset + limit);
 
     return {
         status: 'success',
         data: paginatedData,
+        meta: {
+            totalCount,
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            hasMore: (parseInt(offset) + parseInt(limit)) < totalCount,
+            sortBy,
+            order,
+            filters
+        }
     };
 };

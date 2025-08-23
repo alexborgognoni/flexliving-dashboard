@@ -1,4 +1,9 @@
-import { createRouter } from "../../core/router";
-import { getPropertiesController } from "./properties.controller";
+import { Router } from "express";
+import { getPropertiesController, getPropertyByIdController, getPropertyReviewsController } from "./properties.controller";
 
-export default createRouter("/properties", getPropertiesController);
+const router = Router();
+router.get("/properties", getPropertiesController);
+router.get("/properties/:id", getPropertyByIdController);
+router.get("/properties/:id/reviews", getPropertyReviewsController);
+
+export default router;

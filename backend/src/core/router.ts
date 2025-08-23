@@ -2,9 +2,13 @@ import { Router, RequestHandler } from "express";
 
 export const createRouter = (
     route: string,
-    controller: RequestHandler,
+    listController: RequestHandler,
+    itemController?: RequestHandler,
 ): Router => {
     const router = Router();
-    router.get(route, controller);
+    router.get(route, listController);
+    if (itemController) {
+        router.get(`${route}/:id`, itemController);
+    }
     return router;
 };

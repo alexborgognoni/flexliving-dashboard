@@ -1,4 +1,4 @@
 import { createRouter } from "../../core/router";
-import { getReviewsController } from "./reviews.controller";
+import { getReviewsController, getReviewByIdController } from "./reviews.controller";
 
-export default createRouter("/reviews", getReviewsController);
+export default createRouter("/reviews", getReviewsController, getReviewByIdController);
