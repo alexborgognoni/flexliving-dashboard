@@ -24,6 +24,11 @@ export interface Property {
     }[];
   };
   host_id: string;
+  stay_policies: {
+    check_in: string;
+    check_out: string;
+    house_rules: string[];
+  };
 }
 
 export interface Host {

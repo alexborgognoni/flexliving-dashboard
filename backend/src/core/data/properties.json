@@ -25,7 +25,17 @@
           { "date": "2025-08-24", "available": false }
         ]
       },
-      "host_id": "60001"
+      "host_id": "60001",
+      "stay_policies": {
+        "check_in": "15:00",
+        "check_out": "10:00",
+        "house_rules": [
+          "no_smoking",
+          "no_pets",
+          "no_parties_or_events",
+          "security_deposit_required"
+        ]
+      }
     },
     {
       "id": "D-1001",
@@ -54,7 +64,15 @@
           { "date": "2025-08-24", "available": true }
         ]
       },
-      "host_id": "H-2001"
+      "host_id": "H-2001",
+      "stay_policies": {
+        "check_in": "16:00",
+        "check_out": "11:00",
+        "house_rules": [
+          "no_smoking",
+          "no_pets"
+        ]
+      }
     },
     {
       "id": "AB-5005",
@@ -83,6 +101,15 @@
           { "date": "2025-08-24", "available": true }
         ]
       },
-      "host_id": "H-3003"
+      "host_id": "H-3003",
+      "stay_policies": {
+        "check_in": "15:00",
+        "check_out": "10:00",
+        "house_rules": [
+          "no_smoking",
+          "no_parties_or_events",
+          "security_deposit_required"
+        ]
+      }
     }
   ]

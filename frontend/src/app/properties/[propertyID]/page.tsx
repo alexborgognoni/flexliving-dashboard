@@ -20,6 +20,10 @@ import {
   Clock,
   Shield,
   User,
+  Ban,
+  PawPrint,
+  PartyPopper,
+  CalendarClock,
 } from "lucide-react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorDisplay from "@/components/ui/ErrorDisplay";
@@ -36,6 +40,11 @@ interface Property {
   images: string[];
   host_id: string;
   amenities: string[];
+  stay_policies: {
+    check_in: string;
+    check_out: string;
+    house_rules: string[];
+  };
 }
 
 interface Review {
@@ -253,40 +262,115 @@ export default function PublicPropertyPage() {
               </div>
 
               {/* Stay Policies */}
-              <div className="bg-white rounded-lg p-6 shadow-lg">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              <div className="bg-white border-0 shadow-lg rounded-lg p-6 mb-8">
+                <h2 className="text-2xl font-semibold mb-6 text-[#333333]">
                   Stay Policies
                 </h2>
-                <div className="space-y-4">
-                  <div className="bg-[#f1f3ee] rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                      <Clock size={18} />
-                      Check-in & Check-out
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-white rounded-md p-3">
-                        <p className="text-gray-700">Check-in: 3:00 PM</p>
+                <div className="space-y-8">
+                  {/* Check-in & Check-out */}
+                  <div className="bg-[#F1F3EE] rounded-xl p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 rounded-full">
+                        <Clock className="h-5 w-5 text-[#284E4C]" />
                       </div>
-                      <div className="bg-white rounded-md p-3">
-                        <p className="text-gray-700">Check-out: 11:00 AM</p>
+                      <h3 className="font-semibold text-lg text-[#333333]">
+                        Check-in & Check-out
+                      </h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-white rounded-lg p-4">
+                        <p className="text-sm text-[#5C5C5A]">Check-in time</p>
+                        <p className="font-semibold text-lg text-[#333333]">
+                          {property.stay_policies.check_in || "3:00 PM"}
+                        </p>
+                      </div>
+                      <div className="bg-white rounded-lg p-4">
+                        <p className="text-sm text-[#5C5C5A]">Check-out time</p>
+                        <p className="font-semibold text-lg text-[#333333]">
+                          {property.stay_policies.check_out || "10:00 AM"}
+                        </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#f1f3ee] rounded-lg p-4">
-                    <h3 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                      <Shield size={18} />
-                      House Rules
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-white rounded-md p-3">
-                        <p className="text-gray-700">No smoking</p>
+                  {/* House Rules */}
+                  <div className="bg-[#F1F3EE] rounded-xl p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 rounded-full">
+                        <Shield className="h-5 w-5 text-[#284E4C]" />
                       </div>
-                      <div className="bg-white rounded-md p-3">
-                        <p className="text-gray-700">No pets allowed</p>
+                      <h3 className="font-semibold text-lg text-[#333333]">
+                        House Rules
+                      </h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {property.stay_policies.house_rules.map((rule, index) => (
+                        <div key={index} className="flex items-center gap-3 bg-white rounded-lg p-4">
+                          {rule === "no_smoking" && (
+                            <>
+                              <Ban className="h-5 w-5 text-[#5C5C5A]" />
+                              <p className="font-medium text-[#333333]">No smoking</p>
+                            </>
+                          )}
+                          {rule === "no_pets" && (
+                            <>
+                              <PawPrint className="h-5 w-5 text-[#5C5C5A]" />
+                              <p className="font-medium text-[#333333]">No pets</p>
+                            </>
+                          )}
+                          {rule === "no_parties_or_events" && (
+                            <>
+                              <PartyPopper className="h-5 w-5 text-[#5C5C5A]" />
+                              <p className="font-medium text-[#333333]">No parties or events</p>
+                            </>
+                          )}
+                          {rule === "security_deposit_required" && (
+                            <>
+                              <Shield className="h-5 w-5 text-[#5C5C5A]" />
+                              <p className="font-medium text-[#333333]">Security deposit required</p>
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Cancellation Policy */}
+                  <div className="bg-[#F1F3EE] rounded-xl p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 rounded-full">
+                        <CalendarClock className="h-5 w-5 text-[#284E4C]" />
                       </div>
-                      <div className="bg-white rounded-md p-3 col-span-2">
-                        <p className="text-gray-700">No parties or events</p>
+                      <h3 className="font-semibold text-lg text-[#333333]">
+                        Cancellation Policy
+                      </h3>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="bg-white rounded-lg p-4">
+                        <h4 className="font-medium mb-2 text-[#333333]">
+                          For stays less than 28 days
+                        </h4>
+                        <div className="flex items-start gap-2 text-sm text-[#5C5C5A]">
+                          <div className="w-2 h-2 bg-[#284E4C] rounded-full mt-1.5 flex-shrink-0"></div>
+                          <p>Full refund up to 14 days before check-in</p>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm text-[#5C5C5A] mt-1">
+                          <div className="w-2 h-2 bg-[#284E4C] rounded-full mt-1.5 flex-shrink-0"></div>
+                          <p>No refund for bookings less than 14 days before check-in</p>
+                        </div>
+                      </div>
+                      <div className="bg-white rounded-lg p-4">
+                        <h4 className="font-medium mb-2 text-[#333333]">
+                          For stays of 28 days or more
+                        </h4>
+                        <div className="flex items-start gap-2 text-sm text-[#5C5C5A]">
+                          <div className="w-2 h-2 bg-[#284E4C] rounded-full mt-1.5 flex-shrink-0"></div>
+                          <p>Full refund up to 30 days before check-in</p>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm text-[#5C5C5A] mt-1">
+                          <div className="w-2 h-2 bg-[#284E4C] rounded-full mt-1.5 flex-shrink-0"></div>
+                          <p>No refund for bookings less than 30 days before check-in</p>
+                        </div>
                       </div>
                     </div>
                   </div>

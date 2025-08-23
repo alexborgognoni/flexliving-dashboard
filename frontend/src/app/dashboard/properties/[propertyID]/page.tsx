@@ -192,7 +192,7 @@ export default function PropertyInsights() {
   const filteredAndSortedReviews = useMemo(() => {
     if (!propertyData?.reviews) return [];
 
-    let filtered = propertyData.reviews.filter(
+    const filtered = propertyData.reviews.filter(
       (review) =>
         review.public_review.toLowerCase().includes(searchTerm.toLowerCase())
     );
