@@ -106,7 +106,7 @@ export default function DashboardPage() {
   };
 
   const handlePropertyClick = (property: PropertyWithReviews) => {
-    window.location.href = `/dashboard/${property.id}`;
+    window.location.href = `/dashboard/properties/${property.id}`;
   };
 
   if (loading) {
