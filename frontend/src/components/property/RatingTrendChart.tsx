@@ -23,7 +23,7 @@ export default function RatingTrendChart({ data = [] }: RatingTrendChartProps) {
   const hasData = data.length > 0;
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm h-full flex flex-col">
+    <div className="bg-white rounded-2xl p-6 shadow-lg h-full flex flex-col">
       {/* Section Header */}
       <h3 className="text-xl font-semibold text-gray-900 mb-4">Rating Trend</h3>
 

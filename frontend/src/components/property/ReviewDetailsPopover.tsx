@@ -138,9 +138,14 @@ export default function ReviewDetailsPopover({
               <h4 className="text-xl font-medium text-gray-900">
                 {review.guest_name || `Guest ${review.guest_id}`}
               </h4>
-              <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
-                <Calendar size={14} />
-                {new Date(review.submitted_at).toLocaleDateString()}
+              <div className="flex flex-col gap-1 text-sm text-gray-600 mt-1">
+                <div className="flex items-center gap-1">
+                  <Calendar size={14} />
+                  {new Date(review.submitted_at).toLocaleDateString()}
+                </div>
+                <div className="text-xs text-gray-500">
+                  Member since 2019
+                </div>
               </div>
             </div>
           </div>

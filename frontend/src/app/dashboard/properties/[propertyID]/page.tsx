@@ -23,10 +23,10 @@ interface PropertyData {
   hostName: string;
 }
 
-async function fetchPropertyData(propertyId: string): Promise<PropertyData> {
+async function fetchPropertyData(propertyId: string, filters?: any): Promise<PropertyData> {
   const [property, reviewsData] = await Promise.all([
     fetchProperty(propertyId),
-    fetchPropertyReviews(propertyId)
+    fetchPropertyReviews(propertyId, filters)
   ]);
 
   if (!property) throw new Error("Property not found");
@@ -126,42 +126,81 @@ export default function PropertyInsights() {
   const [sortField, setSortField] = useState("submitted_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedReview, setSelectedReview] = useState<ReviewWithNames | null>(null);
+  const [currentFilters, setCurrentFilters] = useState<any>({});
+  const [originalStats, setOriginalStats] = useState<{ totalReviews: number, averageRating: number } | null>(null);
 
-  useEffect(() => {
-    async function loadPropertyData() {
-      try {
-        const data = await fetchPropertyData(propertyId);
-        setPropertyData(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load property data");
-      } finally {
+  const [isFilterLoading, setIsFilterLoading] = useState(false);
+
+  const loadPropertyData = useCallback(async (filters?: any, isInitialLoad = false) => {
+    try {
+      if (isInitialLoad) {
+        setLoading(true);
+      } else {
+        setIsFilterLoading(true);
+      }
+      const data = await fetchPropertyData(propertyId, filters);
+      setPropertyData(data);
+
+      // Store original stats on first load (without filters)
+      if (isInitialLoad) {
+        setOriginalStats({
+          totalReviews: data.totalReviews,
+          averageRating: data.averageRating
+        });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load property data");
+    } finally {
+      if (isInitialLoad) {
         setLoading(false);
+      } else {
+        setIsFilterLoading(false);
       }
     }
-    if (propertyId) loadPropertyData();
   }, [propertyId]);
+
+  useEffect(() => {
+    if (propertyId) loadPropertyData(undefined, true);
+  }, [propertyId, loadPropertyData]);
+
+  const handleFiltersChange = useCallback((filters: any) => {
+    setCurrentFilters(filters);
+    loadPropertyData(filters, false);
+  }, [loadPropertyData]);
+
+  const handleSearchChange = useCallback((newSearchTerm: string) => {
+    setSearchTerm(newSearchTerm);
+    const updatedFilters = {
+      ...currentFilters,
+      search: newSearchTerm,
+      sortBy: sortField,
+      order: sortDirection
+    };
+    setCurrentFilters(updatedFilters);
+    loadPropertyData(updatedFilters, false);
+  }, [currentFilters, sortField, sortDirection, loadPropertyData]);
+
+  const handleSort = useCallback((field: string) => {
+    const newDirection = sortField === field ? (sortDirection === "asc" ? "desc" : "asc") : "desc";
+    setSortField(field);
+    setSortDirection(newDirection);
+
+    // Trigger API call with new sort parameters
+    const updatedFilters = {
+      ...currentFilters,
+      search: searchTerm,
+      sortBy: field,
+      order: newDirection
+    };
+    setCurrentFilters(updatedFilters);
+    loadPropertyData(updatedFilters, false);
+  }, [sortField, sortDirection, currentFilters, searchTerm, loadPropertyData]);
 
   const categoryAverages = useMemo(() => propertyData ? calculateCategoryAverages(propertyData.reviews) : [], [propertyData?.reviews]);
   const ratingDistribution = useMemo(() => propertyData ? createRatingDistribution(propertyData.reviews) : [], [propertyData?.reviews]);
   const trendData = useMemo(() => propertyData ? createTrendData(propertyData.reviews) : [], [propertyData?.reviews]);
 
-  const filteredAndSortedReviews = useMemo(() => {
-    if (!propertyData?.reviews) return [];
-    const filtered = propertyData.reviews.filter(r => r.public_review.toLowerCase().includes(searchTerm.toLowerCase()));
-    filtered.sort((a, b) => {
-      let aValue = (a as any)[sortField];
-      let bValue = (b as any)[sortField];
-      if (sortField === "submitted_at") { aValue = new Date(aValue).getTime(); bValue = new Date(bValue).getTime(); }
-      else if (typeof aValue === "string") { aValue = aValue.toLowerCase(); bValue = bValue.toLowerCase(); }
-      return sortDirection === "asc" ? (aValue > bValue ? 1 : -1) : (aValue < bValue ? 1 : -1);
-    });
-    return filtered;
-  }, [propertyData?.reviews, searchTerm, sortField, sortDirection]);
 
-  const handleSort = useCallback((field: string) => {
-    if (sortField === field) setSortDirection(prev => prev === "asc" ? "desc" : "asc");
-    else { setSortField(field); setSortDirection("desc"); }
-  }, [sortField]);
 
   const handleToggleStatus = useCallback((reviewId: string, currentStatus: string) => {
     if (selectedReview && selectedReview.id === reviewId) {
@@ -173,7 +212,7 @@ export default function PropertyInsights() {
     setSelectedReview(updatedReview);
     setPropertyData(prevData => {
       if (!prevData) return prevData;
-      const updatedReviews = prevData.reviews.map(review => 
+      const updatedReviews = prevData.reviews.map(review =>
         review.id === updatedReview.id ? updatedReview : review
       );
       return { ...prevData, reviews: updatedReviews };
@@ -195,6 +234,11 @@ export default function PropertyInsights() {
   if (error || !propertyData) return <ErrorDisplay message={error || "Property not found"} onRetry={() => window.history.back()} />;
 
   const { property, averageRating, totalReviews } = propertyData;
+
+  // Use original stats for hero section, current stats for everything else
+  const heroAverageRating = originalStats?.averageRating ?? averageRating;
+  const heroTotalReviews = originalStats?.totalReviews ?? totalReviews;
+
   const legacyPropertyData = {
     listingId: property.id,
     listingName: property.title,
@@ -212,15 +256,14 @@ export default function PropertyInsights() {
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-gray-50 to-[#f1f3ee] border-b border-gray-100 py-16 text-center">
         <h1 className="text-5xl font-bold text-gray-900 mb-4">{property.title}</h1>
-        <p className="text-lg text-gray-600 mb-6">{property.location.address}, {property.location.city}</p>
         <div className="flex justify-center gap-6 mt-4">
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow">
             <Star size={20} className="text-yellow-400" />
-            <span className="font-medium">{averageRating.toFixed(1)}</span>
+            <span className="font-medium text-gray-900">{heroAverageRating.toFixed(1)}</span>
           </div>
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow">
-            <BarChart3 size={20} />
-            <span className="font-medium">{totalReviews} Reviews</span>
+            <BarChart3 size={20} className="text-gray-700" />
+            <span className="font-medium text-gray-900">{heroTotalReviews} Reviews</span>
           </div>
         </div>
       </div>
@@ -231,25 +274,28 @@ export default function PropertyInsights() {
             <PropertyInfoCard propertyData={legacyPropertyData} />
             <HostCard hostName={legacyPropertyData.hostName} />
           </div>
-          <div className="lg:col-span-2">
-            <CategoryRatings reviewCount={totalReviews} averageRating={averageRating} categoryAverages={categoryAverages} />
+          <div className="lg:col-span-2 flex flex-col">
+            <div className="flex-1 flex flex-col">
+              <CategoryRatings reviewCount={totalReviews} averageRating={averageRating} categoryAverages={categoryAverages} />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full mt-8">
+              <RatingDistributionChart data={ratingDistribution} />
+              <RatingTrendChart data={trendData} />
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <RatingDistributionChart data={ratingDistribution} />
-          <RatingTrendChart data={trendData} />
-        </div>
-
         <ReviewsSection
-          reviews={filteredAndSortedReviews}
+          reviews={propertyData.reviews}
           searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
+          setSearchTerm={handleSearchChange}
           sortField={sortField}
           sortDirection={sortDirection}
           handleSort={handleSort}
           handleReviewClick={handleReviewClick}
           handleToggleStatus={handleToggleStatus}
+          propertyId={propertyId}
+          onFiltersChange={handleFiltersChange}
         />
       </main>
 

@@ -23,7 +23,7 @@ export default function RatingDistributionChart({ data = [] }: RatingDistributio
   const hasData = data.some((d) => d.count > 0); // check that at least one count exists
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm h-full flex flex-col">
+    <div className="bg-white rounded-2xl p-6 shadow-lg h-full flex flex-col">
       {/* Section Header */}
       <h3 className="text-xl font-semibold text-gray-900 mb-4">
         Rating Distribution
@@ -38,10 +38,12 @@ export default function RatingDistributionChart({ data = [] }: RatingDistributio
                 dataKey="rating"
                 tick={{ fontSize: 12, fill: "#6b7280" }}
                 axisLine={{ stroke: "#e5e7eb" }}
+                tickFormatter={(value) => parseInt(value) % 2 === 0 ? value : ''}
               />
               <YAxis
                 tick={{ fontSize: 12, fill: "#6b7280" }}
                 axisLine={{ stroke: "#e5e7eb" }}
+                allowDecimals={false}
               />
               <Tooltip
                 contentStyle={{

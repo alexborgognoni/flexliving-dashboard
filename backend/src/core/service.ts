@@ -2,7 +2,7 @@ import { Review, Property, Guest, Host } from './types';
 import { getDatabase } from './database';
 
 export const getData = async <T>(entityName: string, query: any): Promise<{ status: string; data: T[]; meta: any; }> => {
-    const { sortBy, order = 'asc', limit = 10, offset = 0, ...filters } = query;
+    const { sortBy, order = 'asc', limit = 10, offset = 0, status, minRating, maxRating, startDate, endDate, search, ...filters } = query;
     const database = getDatabase();
     
     // Get the appropriate data array
@@ -26,7 +26,43 @@ export const getData = async <T>(entityName: string, query: any): Promise<{ stat
 
     let filteredData = data;
 
-    // Apply filters
+    // Apply specific filters for reviews
+    if (entityName === 'reviews') {
+        filteredData = filteredData.filter((item: any) => {
+            // Status filter
+            if (status && status !== 'all' && item.status !== status) {
+                return false;
+            }
+            
+            // Rating range filter
+            if (minRating !== undefined && item.overall_rating < parseFloat(minRating)) {
+                return false;
+            }
+            if (maxRating !== undefined && item.overall_rating > parseFloat(maxRating)) {
+                return false;
+            }
+            
+            // Date range filter
+            if (startDate || endDate) {
+                const itemDate = new Date(item.submitted_at);
+                if (startDate && itemDate < new Date(startDate)) {
+                    return false;
+                }
+                if (endDate && itemDate > new Date(endDate)) {
+                    return false;
+                }
+            }
+            
+            // Search filter
+            if (search && !item.public_review.toLowerCase().includes(search.toLowerCase())) {
+                return false;
+            }
+            
+            return true;
+        });
+    }
+
+    // Apply general filters
     if (Object.keys(filters).length > 0) {
         filteredData = filteredData.filter((item: any) => {
             for (const key in filters) {

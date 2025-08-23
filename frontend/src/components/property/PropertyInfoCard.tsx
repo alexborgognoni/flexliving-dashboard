@@ -69,7 +69,7 @@ export default function PropertyInfoCard({ propertyData }: PropertyInfoCardProps
               className="inline-flex items-center gap-2 px-4 py-2 bg-[#284e4c] text-white text-sm font-medium rounded-full hover:bg-[#284e4c]/90 transition-colors w-full justify-center"
             >
               <ExternalLink size={14} />
-              View Public Page
+              View Details Page
             </a>
           </div>
         </div>

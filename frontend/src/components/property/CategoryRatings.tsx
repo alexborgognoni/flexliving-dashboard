@@ -36,7 +36,7 @@ export default function CategoryRatings({
   });
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm h-full flex flex-col">
+    <div className="bg-white rounded-2xl p-6 shadow-lg flex flex-col h-full">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold text-gray-900">

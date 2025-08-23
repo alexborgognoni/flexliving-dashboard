@@ -91,10 +91,39 @@ export async function fetchProperty(id: string): Promise<Property | null> {
   return data.data;
 }
 
-export async function fetchPropertyReviews(propertyId: string) {
-  const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/reviews`);
+export async function fetchPropertyReviews(propertyId: string, filters?: {
+  status?: string;
+  minRating?: number;
+  maxRating?: number;
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+  sortBy?: string;
+  order?: 'asc' | 'desc';
+}) {
+  let url = `${API_BASE_URL}/properties/${propertyId}/reviews`;
+  
+  if (filters) {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== '' && value !== 'all') {
+        params.append(key, value.toString());
+      }
+    });
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+  }
+  
+  console.log(`[Frontend] Fetching reviews: ${url}`);
+  console.log('[Frontend] Filters:', filters);
+  
+  const response = await fetch(url);
   if (!response.ok) throw new Error('Failed to fetch property reviews');
-  return await response.json();
+  const data = await response.json();
+  console.log(`[Frontend] Received ${data.data.length} reviews`);
+  return data;
 }
 
 export async function fetchHost(hostId: string): Promise<Host | null> {

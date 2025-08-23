@@ -13,6 +13,8 @@ export const getPropertyByIdController = async (req: Request, res: Response) => 
 }
 
 export const getPropertyReviewsController = async (req: Request, res: Response) => {
-    const reviews = await getPropertyReviews(req.params.id);
+    console.log(`[API] GET /properties/${req.params.id}/reviews with query:`, req.query);
+    const reviews = await getPropertyReviews(req.params.id, req.query);
+    console.log(`[API] Returning ${reviews.data.length} reviews`);
     res.json(reviews);
 }
