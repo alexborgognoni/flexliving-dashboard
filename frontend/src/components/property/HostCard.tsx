@@ -1,11 +1,13 @@
-import React from "react";
-import { Star } from "lucide-react";
+import React, { useState } from "react";
+import { Star, User } from "lucide-react";
 
 interface HostCardProps {
   hostName: string;
 }
 
 export default function HostCard({ hostName }: HostCardProps) {
+  const [imageError, setImageError] = useState(false);
+  
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
       <div className="bg-[#284e4c] px-6 py-4">
@@ -13,11 +15,18 @@ export default function HostCard({ hostName }: HostCardProps) {
       </div>
       <div className="p-6">
         <div className="flex flex-col items-center text-center">
-          <img
-            src="https://ucarecdn.com/c8b5d4f3-6e2a-4b1d-9f3c-8a7e5f9b2c4d/-/format/auto/"
-            alt={hostName}
-            className="w-20 h-20 rounded-full object-cover mb-4"
-          />
+          {!imageError ? (
+            <img
+              src="https://ucarecdn.com/c8b5d4f3-6e2a-4b1d-9f3c-8a7e5f9b2c4d/-/format/auto/"
+              alt={hostName}
+              className="w-20 h-20 rounded-full object-cover mb-4"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-20 h-20 bg-[#284e4c] rounded-full flex items-center justify-center mb-4">
+              <User size={32} className="text-white" />
+            </div>
+          )}
           <h4 className="text-lg font-medium text-gray-900 mb-2">{hostName}</h4>
           <div className="text-sm text-gray-600 mb-4">Property Host</div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
