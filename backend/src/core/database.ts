@@ -196,8 +196,8 @@ const calculatePropertyRatings = (): void => {
       property.rating = Math.round((totalRating / publishedReviews.length) * 10) / 10;
       console.log(`Property ${property.id} (${property.title}): ${publishedReviews.length} published reviews, average rating: ${property.rating}`);
     } else {
-      property.rating = null;
-      console.log(`Property ${property.id} (${property.title}): No published reviews, rating: null`);
+      property.rating = undefined;
+      console.log(`Property ${property.id} (${property.title}): No published reviews, rating: undefined`);
     }
   }
 };
