@@ -14,6 +14,7 @@ import RangeSlider from "@/components/ui/RangeSlider";
 import FilterDropdown from "@/components/ui/FilterDropdown";
 import SortableHeader from "@/components/ui/SortableHeader";
 import { fetchProperties, fetchPropertyReviews, getHostName, PropertyWithNames } from "@/lib/api";
+import { calculateTrend } from "@/lib/trend-utils";
 
 interface PropertyWithReviews extends PropertyWithNames {
   reviewCount: number;
@@ -50,21 +51,9 @@ export default function DashboardPage() {
             getHostName(property.host_id)
           ]);
 
-          // Calculate trend from last two reviews
-          let trend: "up" | "down" | "stable" = "stable";
-          if (reviewsData.reviews && reviewsData.reviews.length >= 2) {
-            const sortedReviews = reviewsData.reviews.sort((a: any, b: any) => 
-              new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime()
-            );
-            const lastReview = sortedReviews[0];
-            const secondLastReview = sortedReviews[1];
-            
-            if (lastReview.overall_rating > secondLastReview.overall_rating) {
-              trend = "up";
-            } else if (lastReview.overall_rating < secondLastReview.overall_rating) {
-              trend = "down";
-            }
-          }
+          // Calculate trend using improved period-based comparison
+          console.log(`[DASHBOARD] Property ${property.id} has ${reviewsData.data?.length} reviews for trend`);
+          const trend = calculateTrend(reviewsData.data || []);
 
           propertiesWithReviews.push({
             ...property,

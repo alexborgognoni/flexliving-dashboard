@@ -43,9 +43,12 @@ export default function CategoryRatings({
     });
   } else {
     // Use category averages
+    console.log('[CategoryRatings] categoryAverages:', categoryAverages);
+    console.log('[CategoryRatings] allCategories:', allCategories);
     categoryAverages.forEach((cat) => {
       categoryMap[cat.category] = cat.average ?? null;
     });
+    console.log('[CategoryRatings] categoryMap:', categoryMap);
   }
 
   return (
@@ -65,14 +68,12 @@ export default function CategoryRatings({
       {/* Ratings Grid - 4x2 layout */}
       <div className="grid grid-cols-4 gap-3 flex-1 h-full w-full">
         {/* Overall Rating */}
-        {averageRating !== null && averageRating !== undefined && (
-          <div className="text-center p-3 rounded-xl bg-[#284e4c] text-white flex flex-col items-center justify-center shadow-sm h-full">
-            <div className="text-xl font-bold mb-1">
-              {averageRating.toFixed(1)}
-            </div>
-            <div className="text-xs font-medium uppercase tracking-wide">Overall</div>
+        <div className="text-center p-3 rounded-xl bg-[#284e4c] text-white flex flex-col items-center justify-center shadow-sm h-full">
+          <div className="text-xl font-bold mb-1">
+            {averageRating !== null && averageRating !== undefined ? averageRating.toFixed(1) : "No data"}
           </div>
-        )}
+          <div className="text-xs font-medium uppercase tracking-wide">Overall</div>
+        </div>
 
         {/* Category Ratings */}
         {allCategories.map((category) => {

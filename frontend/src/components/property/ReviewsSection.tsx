@@ -193,7 +193,7 @@ export default function ReviewsSection({
       {/* Reviews Table */}
       {filteredReviews.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+          <table className="w-full border-collapse table-fixed">
             <colgroup>
               <col className="w-[12%]" />
               <col className="w-[18%]" />
@@ -263,7 +263,7 @@ export default function ReviewsSection({
                 >
                   <td className="py-3 px-6 text-gray-700 w-32">
                     <div className="flex items-center gap-1">
-                      <Calendar size={14} className="text-gray-400" />
+                      <Calendar size={14} className="text-gray-400 flex-shrink-0" />
                       {new Date(review.submitted_at).toLocaleDateString()}
                     </div>
                   </td>
@@ -286,9 +286,9 @@ export default function ReviewsSection({
                     </span>
                   </td>
                   <td className="py-3 px-6 text-gray-700">
-                    <p className="truncate max-w-full" title={review.public_review}>
+                    <div className="max-w-[300px] truncate" title={review.public_review}>
                       {review.public_review}
-                    </p>
+                    </div>
                   </td>
                   <td className="py-3 px-6 w-32 min-w-[8rem]">
                     <span

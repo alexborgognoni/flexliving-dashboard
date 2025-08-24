@@ -14,6 +14,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorDisplay from "@/components/ui/ErrorDisplay";
 import { BarChart3, MessageCircle, Star, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { fetchProperty, fetchPropertyReviews, getHostName, getGuestName, Property, Review, ReviewWithNames } from "@/lib/api";
+import { calculateTrend } from "@/lib/trend-utils";
 
 interface PropertyData {
   property: Property;
@@ -25,9 +26,10 @@ interface PropertyData {
 }
 
 async function fetchPropertyData(propertyId: string, filters?: any): Promise<PropertyData> {
-  const [property, reviewsData] = await Promise.all([
+  const [property, reviewsData, allReviewsData] = await Promise.all([
     fetchProperty(propertyId),
-    fetchPropertyReviews(propertyId, filters)
+    fetchPropertyReviews(propertyId, filters),
+    fetchPropertyReviews(propertyId) // Fetch unfiltered reviews for trend calculation
   ]);
 
   if (!property) throw new Error("Property not found");
@@ -57,21 +59,8 @@ async function fetchPropertyData(propertyId: string, filters?: any): Promise<Pro
     });
   });
 
-  // Calculate trend from last two reviews (same logic as dashboard)
-  let trend: "up" | "down" | "stable" = "stable";
-  if (reviews && reviews.length >= 2) {
-    const sortedReviews = reviews.sort((a, b) => 
-      new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime()
-    );
-    const lastReview = sortedReviews[0];
-    const secondLastReview = sortedReviews[1];
-    
-    if (lastReview.overall_rating > secondLastReview.overall_rating) {
-      trend = "up";
-    } else if (lastReview.overall_rating < secondLastReview.overall_rating) {
-      trend = "down";
-    }
-  }
+  // Calculate trend using unfiltered reviews (consistent with dashboard)
+  const trend = calculateTrend(allReviewsData.data || []);
 
   return {
     property,
@@ -90,20 +79,21 @@ function calculateCategoryAverages(reviews: ReviewWithNames[]) {
   reviews.forEach((review) => {
     if (review.ratings && typeof review.ratings === "object") {
       Object.entries(review.ratings).forEach(([category, rating]) => {
-        if (!categoryTotals[category]) {
-          categoryTotals[category] = 0;
-          categoryCounts[category] = 0;
+        // Only include non-zero ratings (zero means the category wasn't rated)
+        if (rating > 0) {
+          if (!categoryTotals[category]) {
+            categoryTotals[category] = 0;
+            categoryCounts[category] = 0;
+          }
+          categoryTotals[category] += rating;
+          categoryCounts[category] += 1;
         }
-        categoryTotals[category] += rating;
-        categoryCounts[category] += 1;
       });
     }
   });
 
   return Object.keys(categoryTotals).map((category) => ({
-    category: category
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase()),
+    category: category, // Keep original key for lookup
     average: Math.round((categoryTotals[category] / categoryCounts[category]) * 10) / 10,
   }));
 }
@@ -157,7 +147,13 @@ export default function PropertyInsights() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedReview, setSelectedReview] = useState<ReviewWithNames | null>(null);
   const [currentFilters, setCurrentFilters] = useState<any>({});
-  const [originalStats, setOriginalStats] = useState<{ totalReviews: number, averageRating: number } | null>(null);
+  const [originalStats, setOriginalStats] = useState<{ 
+    totalReviews: number, 
+    averageRating: number, 
+    trend: "up" | "down" | "stable",
+    categoryAverages: { category: string, average: number }[],
+    reviews: ReviewWithNames[] // Store original unfiltered reviews
+  } | null>(null);
 
   const [isFilterLoading, setIsFilterLoading] = useState(false);
 
@@ -173,9 +169,14 @@ export default function PropertyInsights() {
 
       // Store original stats on first load (without filters)
       if (isInitialLoad) {
+        // Use the same trend that was calculated from unfiltered data
+        console.log(`[INSIGHTS HERO] Property ${propertyId} using trend from unfiltered data: ${data.trend}`);
         setOriginalStats({
           totalReviews: data.totalReviews,
-          averageRating: data.averageRating
+          averageRating: data.averageRating,
+          trend: data.trend, // Use trend calculated from unfiltered data
+          categoryAverages: calculateCategoryAverages(data.reviews),
+          reviews: data.reviews // Store original reviews for consistent trend calculation
         });
       }
     } catch (err) {
@@ -282,6 +283,8 @@ export default function PropertyInsights() {
   // Use original stats for hero section, current stats for everything else
   const heroAverageRating = originalStats?.averageRating ?? averageRating;
   const heroTotalReviews = originalStats?.totalReviews ?? totalReviews;
+  const heroTrend = originalStats?.trend ?? propertyData.trend;
+  const heroCategoryAverages = originalStats?.categoryAverages ?? categoryAverages;
 
   const legacyPropertyData = {
     listingId: property.id,
@@ -310,13 +313,13 @@ export default function PropertyInsights() {
             <span className="font-medium text-gray-900">{heroTotalReviews} Reviews</span>
           </div>
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow">
-            {propertyData.trend === "up" && <TrendingUp size={20} className="text-green-500" />}
-            {propertyData.trend === "down" && <TrendingDown size={20} className="text-red-500" />}
-            {propertyData.trend === "stable" && <Minus size={20} className="text-blue-500" />}
+            {heroTrend === "up" && <TrendingUp size={20} className="text-green-500" />}
+            {heroTrend === "down" && <TrendingDown size={20} className="text-red-500" />}
+            {heroTrend === "stable" && <Minus size={20} className="text-blue-500" />}
             <span className="font-medium text-gray-900">
-              {propertyData.trend === "up" && "Rising"}
-              {propertyData.trend === "down" && "Lowering"}
-              {propertyData.trend === "stable" && "Stable"}
+              {heroTrend === "up" && "Rising"}
+              {heroTrend === "down" && "Lowering"}
+              {heroTrend === "stable" && "Stable"}
             </span>
           </div>
         </div>
@@ -330,7 +333,7 @@ export default function PropertyInsights() {
           </div>
           <div className="lg:col-span-2 flex flex-col">
             <div className="flex-1 flex flex-col">
-              <CategoryRatings reviewCount={totalReviews} averageRating={averageRating} categoryAverages={categoryAverages} />
+              <CategoryRatings reviewCount={totalReviews} averageRating={propertyData.reviews.length > 0 ? propertyData.reviews.reduce((sum, review) => sum + review.overall_rating, 0) / propertyData.reviews.length : null} categoryAverages={categoryAverages} />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full mt-8">
               <RatingDistributionChart data={ratingDistribution} />
