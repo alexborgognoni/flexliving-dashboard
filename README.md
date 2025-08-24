@@ -44,11 +44,23 @@ A comprehensive dashboard for managing and analyzing property reviews from Hosta
 - **Real-time Updates**: Ratings are recalculated during database initialization
 - **Fallback Logic**: Uses existing property rating if no published reviews exist
 
+### Trend Calculation System
+- **Consistent Algorithm**: Both dashboard and insights pages use identical trend calculation logic
+- **Unfiltered Data**: Trends are calculated using the complete, unfiltered review dataset for accuracy
+- **Period-Based Comparison**: Reviews are split into recent and older periods (50/50 split by date)
+- **Threshold-Based Classification**: 
+  - "Rising" when recent average > older average by 0.1+ points
+  - "Lowering" when recent average < older average by 0.1+ points  
+  - "Stable" when difference is within ±0.1 points
+- **Minimum Data Requirement**: Requires at least 2 reviews for meaningful trend analysis
+
 ### Frontend Data Flow
 - **API Abstraction**: Centralized API utilities in `/lib/api.ts` with TypeScript interfaces
 - **Name Resolution**: Host and guest IDs are resolved to names throughout the UI
 - **Caching Strategy**: Host/guest names are cached to avoid repeated API calls
 - **Progressive Enhancement**: Graceful fallbacks when names cannot be resolved
+- **Trend Consistency**: Dashboard table and insights hero section display identical trends by using the same unfiltered dataset
+- **Filter-Based Ratings**: Category ratings in insights page reflect filtered data while overall trend remains based on complete data
 
 ### Component Architecture
 - **Page-Level Data Fetching**: Each page handles its own data requirements
@@ -74,6 +86,8 @@ http://localhost:8000/api
 
 - **GET /properties/:id/reviews** - Get reviews for property
   - Returns: `{ status: "success", data: Review[], meta: { totalCount: number, averageRating: number } }`
+  - Supports optional query parameters for filtering (status, rating range, date range, search, sorting)
+  - Returns filtered data in `data` array while `meta.averageRating` reflects all published reviews
   - Only returns reviews that could be mapped during normalization
 
 #### Hosts
