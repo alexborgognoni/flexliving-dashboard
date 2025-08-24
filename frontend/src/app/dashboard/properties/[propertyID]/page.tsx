@@ -12,7 +12,7 @@ import ReviewsSection from "@/components/property/ReviewsSection";
 import ReviewDetailsPopover from "@/components/property/ReviewDetailsPopover";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ErrorDisplay from "@/components/ui/ErrorDisplay";
-import { BarChart3, MessageCircle, Star } from "lucide-react";
+import { BarChart3, MessageCircle, Star, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { fetchProperty, fetchPropertyReviews, getHostName, getGuestName, Property, Review, ReviewWithNames } from "@/lib/api";
 
 interface PropertyData {
@@ -21,6 +21,7 @@ interface PropertyData {
   averageRating: number;
   totalReviews: number;
   hostName: string;
+  trend: "up" | "down" | "stable";
 }
 
 async function fetchPropertyData(propertyId: string, filters?: any): Promise<PropertyData> {
@@ -44,12 +45,29 @@ async function fetchPropertyData(propertyId: string, filters?: any): Promise<Pro
     });
   }
 
+  // Calculate trend from last two reviews (same logic as dashboard)
+  let trend: "up" | "down" | "stable" = "stable";
+  if (reviews && reviews.length >= 2) {
+    const sortedReviews = reviews.sort((a, b) => 
+      new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime()
+    );
+    const lastReview = sortedReviews[0];
+    const secondLastReview = sortedReviews[1];
+    
+    if (lastReview.overall_rating > secondLastReview.overall_rating) {
+      trend = "up";
+    } else if (lastReview.overall_rating < secondLastReview.overall_rating) {
+      trend = "down";
+    }
+  }
+
   return {
     property,
     reviews,
     averageRating: reviewsData.meta.averageRating || property.rating || 0,
     totalReviews: reviewsData.meta.totalCount,
-    hostName
+    hostName,
+    trend
   };
 }
 
@@ -264,6 +282,16 @@ export default function PropertyInsights() {
           <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow">
             <BarChart3 size={20} className="text-gray-700" />
             <span className="font-medium text-gray-900">{heroTotalReviews} Reviews</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow">
+            {propertyData.trend === "up" && <TrendingUp size={20} className="text-green-500" />}
+            {propertyData.trend === "down" && <TrendingDown size={20} className="text-red-500" />}
+            {propertyData.trend === "stable" && <Minus size={20} className="text-blue-500" />}
+            <span className="font-medium text-gray-900">
+              {propertyData.trend === "up" && "Rising"}
+              {propertyData.trend === "down" && "Lowering"}
+              {propertyData.trend === "stable" && "Stable"}
+            </span>
           </div>
         </div>
       </div>

@@ -2,45 +2,14 @@ import React from "react";
 import {
   Search,
   Filter,
-  ArrowUpDown,
-  ChevronUp,
-  ChevronDown,
   Calendar,
   Star,
 } from "lucide-react";
+import RangeSlider from "@/components/ui/RangeSlider";
+import FilterDropdown from "@/components/ui/FilterDropdown";
+import SortableHeader from "@/components/ui/SortableHeader";
 import { ReviewWithNames } from "@/lib/api";
 
-interface SortableHeaderProps {
-  field: string;
-  label: string;
-  sortField: string;
-  sortDirection: string;
-  onSort: (field: string) => void;
-}
-
-const SortableHeader = ({
-  field,
-  label,
-  sortField,
-  sortDirection,
-  onSort,
-}: SortableHeaderProps) => (
-  <th className="text-left py-3 px-6">
-    <button
-      onClick={() => onSort(field)}
-      className="flex items-center gap-1 font-medium text-gray-700 hover:text-[#284e4c] transition-colors cursor-pointer"
-    >
-      {label}
-      {sortField === field &&
-        (sortDirection === "asc" ? (
-          <ChevronUp size={14} />
-        ) : (
-          <ChevronDown size={14} />
-        ))}
-      {sortField !== field && <ArrowUpDown size={14} className="opacity-30" />}
-    </button>
-  </th>
-);
 
 interface ReviewsSectionProps {
   reviews: ReviewWithNames[];
@@ -146,93 +115,33 @@ export default function ReviewsSection({
           } bg-gray-50 border-b border-gray-200`}
       >
         <div className="px-6 py-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Status Filter Card */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4 flex-1 flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-3 block h-5">Status</label>
-              <div className="flex-1 flex items-center">
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#284e4c]/20 focus:border-[#284e4c] cursor-pointer bg-white text-gray-900"
-                >
-                  <option value="all" className="text-gray-900">All Statuses</option>
-                  <option value="published" className="text-gray-900">Published</option>
-                  <option value="unpublished" className="text-gray-900">Unpublished</option>
-                </select>
-              </div>
-            </div>
+          <div className="grid grid-cols-3 gap-4">
+            <FilterDropdown
+              label="Status"
+              value={statusFilter}
+              options={[
+                { value: 'all', label: 'All Statuses' },
+                { value: 'published', label: 'Published' },
+                { value: 'unpublished', label: 'Unpublished' },
+              ]}
+              onChange={setStatusFilter}
+            />
 
-            {/* Rating Range Filter Card */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4 flex-1 flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-3 block h-5">Rating Range</label>
-              <div className="flex-1 flex items-center">
-                <div className="relative w-full h-10 flex items-center mt-2">
-                  {/* Track */}
-                  <div className="absolute top-1/2 left-0 w-full h-2 bg-gray-200 rounded-full -translate-y-1/2" />
-
-                  {/* Selected Range */}
-                  <div
-                    className="absolute top-1/2 h-2 bg-[#284e4c] rounded-full -translate-y-1/2"
-                    style={{
-                      left: `${(minRating / 10) * 100}%`,
-                      width: `${((maxRating - minRating) / 10) * 100}%`,
-                    }}
-                  />
-
-                  {/* Min Handle */}
-                  <input
-                    type="range"
-                    min={0}
-                    max={10}
-                    step={0.5}
-                    value={minRating}
-                    onChange={(e) => {
-                      const value = parseFloat(e.target.value);
-                      setMinRating(Math.min(value, maxRating));
-                    }}
-                    className="absolute w-full h-2 bg-transparent appearance-none pointer-events-auto cursor-pointer"
-                    style={{ zIndex: 4 }}
-                  />
-
-                  {/* Max Handle */}
-                  <input
-                    type="range"
-                    min={0}
-                    max={10}
-                    step={0.5}
-                    value={maxRating}
-                    onChange={(e) => {
-                      const value = parseFloat(e.target.value);
-                      setMaxRating(Math.max(value, minRating));
-                    }}
-                    className="absolute w-full h-2 bg-transparent appearance-none pointer-events-auto cursor-pointer"
-                    style={{ zIndex: 3 }}
-                  />
-
-                  {/* Min Bubble */}
-                  <div
-                    className="absolute -top-6 px-2 py-1 bg-white text-xs font-medium text-gray-900 rounded shadow cursor-grab hover:cursor-grabbing"
-                    style={{ left: `${(minRating / 10) * 100}%`, transform: 'translateX(-50%)' }}
-                  >
-                    {minRating}
-                  </div>
-
-                  {/* Max Bubble */}
-                  <div
-                    className="absolute -top-6 px-2 py-1 bg-white text-xs font-medium text-gray-900 rounded shadow cursor-grab hover:cursor-grabbing"
-                    style={{ left: `${(maxRating / 10) * 100}%`, transform: 'translateX(-50%)' }}
-                  >
-                    {maxRating}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <RangeSlider
+              label="Rating Range"
+              min={0}
+              max={10}
+              step={0.5}
+              minValue={minRating}
+              maxValue={maxRating}
+              onMinChange={setMinRating}
+              onMaxChange={setMaxRating}
+            />
 
             {/* Date Range Filter Card */}
             <div className="bg-white rounded-lg border border-gray-200 p-4 flex-1 flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-3 block h-5">Date Range</label>
-              <div className="flex-1 flex items-center">
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Date Range</label>
+              <div className="flex items-center justify-center py-2">
                 <div className="space-y-2 w-full">
                   <div>
                     <label className="text-xs font-medium text-gray-600 mb-1 block">Start Date</label>
@@ -258,8 +167,12 @@ export default function ReviewsSection({
               </div>
             </div>
 
-            {/* Clear Filters Button */}
-            <div className="flex items-end lg:items-center">
+            {/* Empty columns for spacing */}
+            <div></div>
+            <div></div>
+
+            {/* Clear Filters Button - Last column of second row */}
+            <div className="flex justify-end">
               <button
                 onClick={() => {
                   setStatusFilter('all');

@@ -35,7 +35,7 @@ export default function Home() {
 
             <button
               onClick={navigateToDashboard}
-              className="inline-flex items-center px-8 py-4 bg-[#284e4c] text-white font-medium rounded-full hover:bg-[#284e4c]/90 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-transform"
+              className="inline-flex items-center px-8 py-4 bg-[#284e4c] text-white font-medium rounded-full hover:bg-[#284e4c]/90 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-transform cursor-pointer"
             >
               <BarChart3 size={20} className="mr-2" />
               View Dashboard
