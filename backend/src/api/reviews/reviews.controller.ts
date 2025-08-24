@@ -29,23 +29,29 @@ export const updateReviewStatusController = async (req: Request, res: Response) 
 
 export const getHostawayReviewsController = async (req: Request, res: Response) => {
     try {
-        const normalizedReviews = await getHostawayReviews();
-        const validReviews = normalizedReviews.filter(review => review !== null);
+        const hostawayReviews = await getHostawayReviews();
+        
+        // Calculate stats for the Hostaway channel
+        const publishedCount = hostawayReviews.filter(review => review.status === 'published').length;
+        const avgRating = hostawayReviews.length > 0 
+            ? hostawayReviews.reduce((sum, review) => sum + review.overall_rating, 0) / hostawayReviews.length
+            : 0;
         
         res.json({
             status: 'success',
-            data: validReviews,
+            data: hostawayReviews,
             meta: {
-                totalCount: validReviews.length,
-                sourceCount: normalizedReviews.length,
-                mappingSuccessRate: `${Math.round((validReviews.length / normalizedReviews.length) * 100)}%`
+                totalCount: hostawayReviews.length,
+                publishedCount: publishedCount,
+                averageRating: avgRating,
+                channel: 'hostaway'
             }
         });
     } catch (error) {
         console.error('Error fetching Hostaway reviews:', error);
         res.status(500).json({
             status: 'error',
-            message: 'Failed to fetch and normalize Hostaway reviews'
+            message: 'Failed to fetch Hostaway reviews from database'
         });
     }
 }
