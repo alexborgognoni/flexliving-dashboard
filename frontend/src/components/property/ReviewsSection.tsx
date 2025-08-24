@@ -19,7 +19,7 @@ interface ReviewsSectionProps {
   sortDirection: string;
   handleSort: (field: string) => void;
   handleReviewClick: (review: ReviewWithNames) => void;
-  handleToggleStatus: (reviewId: string, currentStatus: string) => void;
+  handleToggleStatus: (reviewId: string, oldStatus: string, newStatus: string) => void;
   propertyId: string;
   onFiltersChange?: (filters: {
     status?: string;
@@ -210,6 +210,7 @@ export default function ReviewsSection({
                   sortField={sortField}
                   sortDirection={sortDirection}
                   onSort={handleSort}
+                  className="w-32"
                 />
                 <SortableHeader
                   field="guest_name"
@@ -217,6 +218,7 @@ export default function ReviewsSection({
                   sortField={sortField}
                   sortDirection={sortDirection}
                   onSort={handleSort}
+                  className="w-48"
                 />
                 <SortableHeader
                   field="overall_rating"
@@ -224,6 +226,7 @@ export default function ReviewsSection({
                   sortField={sortField}
                   sortDirection={sortDirection}
                   onSort={handleSort}
+                  className="w-20"
                 />
                 <SortableHeader
                   field="channel"
@@ -231,6 +234,7 @@ export default function ReviewsSection({
                   sortField={sortField}
                   sortDirection={sortDirection}
                   onSort={handleSort}
+                  className="w-24"
                 />
                 <SortableHeader
                   field="public_review"
@@ -245,6 +249,7 @@ export default function ReviewsSection({
                   sortField={sortField}
                   sortDirection={sortDirection}
                   onSort={handleSort}
+                  className="w-32 min-w-[8rem]"
                 />
               </tr>
             </thead>
@@ -256,16 +261,18 @@ export default function ReviewsSection({
                     }`}
                   onClick={() => handleReviewClick(review)}
                 >
-                  <td className="py-3 px-6 text-gray-700">
+                  <td className="py-3 px-6 text-gray-700 w-32">
                     <div className="flex items-center gap-1">
                       <Calendar size={14} className="text-gray-400" />
                       {new Date(review.submitted_at).toLocaleDateString()}
                     </div>
                   </td>
-                  <td className="py-3 px-6 text-gray-700 font-medium">
-                    {review.guest_name || `Guest ${review.guest_id}`}
+                  <td className="py-3 px-6 text-gray-700 font-medium w-48">
+                    <div className="truncate">
+                      {review.guest_name || `Guest ${review.guest_id}`}
+                    </div>
                   </td>
-                  <td className="py-3 px-6">
+                  <td className="py-3 px-6 w-20">
                     <div className="flex items-center gap-1">
                       <Star size={14} className="text-yellow-400 fill-current" />
                       <span className="font-medium text-gray-900">
@@ -273,8 +280,8 @@ export default function ReviewsSection({
                       </span>
                     </div>
                   </td>
-                  <td className="py-3 px-6">
-                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                  <td className="py-3 px-6 w-24">
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 capitalize truncate">
                       {(review as any).channel?.name || 'Unknown'}
                     </span>
                   </td>
@@ -283,9 +290,9 @@ export default function ReviewsSection({
                       {review.public_review}
                     </p>
                   </td>
-                  <td className="py-3 px-6">
+                  <td className="py-3 px-6 w-32 min-w-[8rem]">
                     <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${review.status === 'published'
+                      className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap min-w-[6rem] ${review.status === 'published'
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-600'
                         }`}

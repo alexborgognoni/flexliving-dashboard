@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { X, User, Calendar } from "lucide-react";
 import { updateReviewStatus } from "@/lib/api";
+import CategoryRatings from "./CategoryRatings";
 
 interface Review {
   id: string;
@@ -28,7 +29,7 @@ interface Review {
 interface ReviewDetailsPopoverProps {
   review: Review;
   onClose: () => void;
-  onToggleStatus: (reviewId: string, currentStatus: string) => void;
+  onToggleStatus: (reviewId: string, oldStatus: string, newStatus: string) => void;
   onReviewUpdate?: (updatedReview: Review) => void;
 }
 
@@ -41,20 +42,29 @@ export default function ReviewDetailsPopover({
   const modalRef = useRef<HTMLDivElement>(null);
   if (!review) return null;
 
-  const categories = Object.entries(review.ratings || {}).map(([key, value]) => ({
-    category: key.replace(/_/g, " "),
-    rating: value,
-  }));
-
   const handleToggleStatus = async () => {
     const newStatus = review.status === "published" ? "unpublished" : "published";
-    const result = await updateReviewStatus(review.id, newStatus);
-
-    if (result.success && result.review) {
-      onReviewUpdate?.(result.review as Review);
-      onToggleStatus(review.id, review.status);
-    } else {
-      console.error("Failed to update review status:", result.error);
+    
+    // Optimistic update - update UI immediately
+    const optimisticReview = { ...review, status: newStatus };
+    onReviewUpdate?.(optimisticReview);
+    onToggleStatus(review.id, review.status, newStatus);
+    
+    // Make the network call in the background
+    try {
+      const result = await updateReviewStatus(review.id, newStatus);
+      
+      if (!result.success) {
+        console.error("Failed to update review status:", result.error);
+        // Revert the optimistic update on failure
+        onReviewUpdate?.(review);
+        onToggleStatus(review.id, newStatus, review.status);
+      }
+    } catch (error) {
+      console.error("Network error updating review status:", error);
+      // Revert the optimistic update on failure
+      onReviewUpdate?.(review);
+      onToggleStatus(review.id, newStatus, review.status);
     }
   };
 
@@ -166,31 +176,11 @@ export default function ReviewDetailsPopover({
             <h5 className="text-lg font-medium text-gray-900 mb-4">
               Guest Ratings
             </h5>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <div className="text-center p-4 rounded-xl bg-[#2d5a4d] text-white flex flex-col justify-center">
-                <div className="text-2xl font-light mb-2">
-                  {review.overall_rating.toFixed(1)}
-                </div>
-                <div className="text-xs font-medium uppercase tracking-wide">
-                  Overall
-                </div>
-              </div>
-              {categories.map((category) => (
-                <div
-                  key={category.category}
-                  className="text-center p-4 rounded-xl bg-[#f1f3ee] flex flex-col justify-center"
-                >
-                  <div className="text-2xl font-light text-[#2d5a4d] mb-2">
-                    {category.rating ? category.rating.toFixed(1) : "No data"}
-                  </div>
-                  <div className="text-xs font-medium text-gray-600 uppercase tracking-wide break-words">
-                    {category.category === "listing accuracy"
-                      ? "Listing Accuracy"
-                      : category.category}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <CategoryRatings
+              averageRating={review.overall_rating}
+              ratings={review.ratings}
+              compact={true}
+            />
           </div>
 
           {/* Review Text */}

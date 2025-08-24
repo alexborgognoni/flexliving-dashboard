@@ -9,7 +9,7 @@ import {
   Eye,
   Filter,
 } from "lucide-react";
-import AppHeader from "@/components/layout/AppHeader";
+import DashboardHeader from "@/components/layout/DashboardHeader";
 import RangeSlider from "@/components/ui/RangeSlider";
 import FilterDropdown from "@/components/ui/FilterDropdown";
 import SortableHeader from "@/components/ui/SortableHeader";
@@ -34,6 +34,8 @@ export default function DashboardPage() {
   const [maxRating, setMaxRating] = useState(10);
   const [minReviews, setMinReviews] = useState(0);
   const [maxReviews, setMaxReviews] = useState(0);
+  const [initialMinReviews, setInitialMinReviews] = useState(0);
+  const [initialMaxReviews, setInitialMaxReviews] = useState(0);
   const [trendFilter, setTrendFilter] = useState('all');
 
   useEffect(() => {
@@ -75,9 +77,13 @@ export default function DashboardPage() {
 
         setProperties(propertiesWithReviews);
         
-        // Set max reviews for slider
+        // Set min and max reviews for slider
+        const minReviewCount = Math.min(...propertiesWithReviews.map(p => p.reviewCount));
         const maxReviewCount = Math.max(...propertiesWithReviews.map(p => p.reviewCount));
+        setMinReviews(minReviewCount);
         setMaxReviews(maxReviewCount);
+        setInitialMinReviews(minReviewCount);
+        setInitialMaxReviews(maxReviewCount);
         
       } catch (error) {
         console.error("Failed to load properties:", error);
@@ -152,7 +158,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#fffdf6]">
-        <AppHeader />
+        <DashboardHeader />
         <div className="flex items-center justify-center h-64">
           <div className="text-lg font-medium text-gray-900">Loading properties...</div>
         </div>
@@ -162,7 +168,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#fffdf6]">
-      <AppHeader />
+      <DashboardHeader />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Table */}
@@ -208,8 +214,8 @@ export default function DashboardPage() {
               <div className="grid grid-cols-3 gap-4">
                 <RangeSlider
                   label="Review Count Range"
-                  min={0}
-                  max={maxReviews}
+                  min={initialMinReviews}
+                  max={initialMaxReviews}
                   step={1}
                   minValue={minReviews}
                   maxValue={maxReviews}
@@ -250,8 +256,8 @@ export default function DashboardPage() {
                     onClick={() => {
                       setMinRating(0);
                       setMaxRating(10);
-                      setMinReviews(0);
-                      setMaxReviews(properties.length > 0 ? Math.max(...properties.map(p => p.reviewCount)) : 0);
+                      setMinReviews(initialMinReviews);
+                      setMaxReviews(initialMaxReviews);
                       setTrendFilter('all');
                       setSearchTerm('');
                     }}

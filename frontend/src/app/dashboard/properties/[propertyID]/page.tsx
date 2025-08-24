@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { useParams } from "next/navigation";
-import AppHeader from "@/components/layout/AppHeader";
+import DashboardHeader from "@/components/layout/DashboardHeader";
 import PropertyInfoCard from "@/components/property/PropertyInfoCard";
 import HostCard from "@/components/property/HostCard";
 import CategoryRatings from "@/components/property/CategoryRatings";
@@ -32,18 +32,30 @@ async function fetchPropertyData(propertyId: string, filters?: any): Promise<Pro
 
   if (!property) throw new Error("Property not found");
 
+  // Ensure host name is fully loaded
   const hostName = await getHostName(property.host_id);
+  if (!hostName) throw new Error("Failed to load host information");
+
   const reviews: ReviewWithNames[] = [];
 
-  // Fetch guest names for all reviews
-  for (const review of reviewsData.data) {
-    const guestName = await getGuestName(review.guest_id);
+  // Fetch all guest names in parallel for better performance
+  const guestNamePromises = reviewsData.data.map(review => getGuestName(review.guest_id));
+  const guestNames = await Promise.all(guestNamePromises);
+
+  // Ensure all guest names are loaded
+  const missingGuestNames = guestNames.filter(name => !name);
+  if (missingGuestNames.length > 0) {
+    throw new Error("Failed to load all guest information");
+  }
+
+  // Combine reviews with guest names
+  reviewsData.data.forEach((review, index) => {
     reviews.push({
       ...review,
-      guest_name: guestName,
+      guest_name: guestNames[index],
       host_name: hostName
     });
-  }
+  });
 
   // Calculate trend from last two reviews (same logic as dashboard)
   let trend: "up" | "down" | "stable" = "stable";
@@ -220,9 +232,19 @@ export default function PropertyInsights() {
 
 
 
-  const handleToggleStatus = useCallback((reviewId: string, currentStatus: string) => {
+  const handleToggleStatus = useCallback((reviewId: string, oldStatus: string, newStatus: string) => {
+    // Update the main reviews list optimistically
+    setPropertyData(prevData => {
+      if (!prevData) return prevData;
+      const updatedReviews = prevData.reviews.map(review =>
+        review.id === reviewId ? { ...review, status: newStatus } : review
+      );
+      return { ...prevData, reviews: updatedReviews };
+    });
+
+    // Update the selected review in the modal if it's the same review
     if (selectedReview && selectedReview.id === reviewId) {
-      setSelectedReview(prev => ({ ...prev!, status: currentStatus === "published" ? "unpublished" : "published" }));
+      setSelectedReview(prev => ({ ...prev!, status: newStatus }));
     }
   }, [selectedReview]);
 
@@ -249,7 +271,11 @@ export default function PropertyInsights() {
   }, [selectedReview, closePopover]);
 
   if (loading) return <LoadingSpinner />;
-  if (error || !propertyData) return <ErrorDisplay message={error || "Property not found"} onRetry={() => window.history.back()} />;
+  if (error || !propertyData || !propertyData.hostName) return <ErrorDisplay message={error || "Property not found"} onRetry={() => window.history.back()} />;
+  
+  // Ensure all guest names are loaded
+  const missingGuestNames = propertyData.reviews.some(review => !review.guest_name);
+  if (missingGuestNames) return <LoadingSpinner />;
 
   const { property, averageRating, totalReviews } = propertyData;
 
@@ -269,7 +295,7 @@ export default function PropertyInsights() {
 
   return (
     <div className="min-h-screen bg-[#fffdf6]">
-      <AppHeader />
+      <DashboardHeader />
 
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-gray-50 to-[#f1f3ee] border-b border-gray-100 py-16 text-center">

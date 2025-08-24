@@ -3,7 +3,7 @@
 import React from "react";
 import { BarChart3, MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import AppHeader from "@/components/layout/AppHeader";
+import DashboardHeader from "@/components/layout/DashboardHeader";
 
 export default function Home() {
   const router = useRouter();
@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#fffdf6]">
-      <AppHeader />
+      <DashboardHeader />
 
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-gray-50 to-white">
@@ -58,7 +58,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-center p-8 rounded-2xl bg-white shadow-lg">
               <div className="w-16 h-16 bg-[#284e4c] rounded-full flex items-center justify-center mx-auto mb-6">
                 <BarChart3 size={32} className="text-white" />
               </div>
@@ -72,7 +72,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="text-center p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-center p-8 rounded-2xl bg-white shadow-lg">
               <div className="w-16 h-16 bg-[#284e4c] rounded-full flex items-center justify-center mx-auto mb-6">
                 <MessageCircle size={32} className="text-white" />
               </div>
@@ -86,7 +86,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="text-center p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-center p-8 rounded-2xl bg-white shadow-lg">
               <div className="w-16 h-16 bg-[#284e4c] rounded-full flex items-center justify-center mx-auto mb-6">
                 <BarChart3 size={32} className="text-white" />
               </div>
