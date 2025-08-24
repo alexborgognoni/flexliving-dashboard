@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ExternalLink, MapPin, Users, Bed, Bath, Home } from "lucide-react";
 
 interface PropertyData {
@@ -13,13 +13,22 @@ interface PropertyInfoCardProps {
 }
 
 export default function PropertyInfoCard({ propertyData }: PropertyInfoCardProps) {
+  const [imageError, setImageError] = useState(false);
+  
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
-      <img
-        src={propertyData.propertyImage}
-        alt={propertyData.listingName}
-        className="w-full h-48 object-cover"
-      />
+      {!imageError ? (
+        <img
+          src={propertyData.propertyImage}
+          alt={propertyData.listingName}
+          className="w-full h-48 object-cover"
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <div className="w-full h-48 bg-gray-100 border-2 border-gray-200 flex items-center justify-center">
+          <Home size={48} className="text-gray-400" />
+        </div>
+      )}
       <div className="bg-[#284e4c] px-6 py-4">
         <h3 className="text-xl font-medium text-white">Property Overview</h3>
       </div>
