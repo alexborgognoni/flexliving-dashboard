@@ -282,10 +282,11 @@ export default function ReviewsSection({
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <colgroup>
-              <col className="w-[15%]" />
-              <col className="w-[20%]" />
               <col className="w-[12%]" />
-              <col className="w-[40%]" />
+              <col className="w-[18%]" />
+              <col className="w-[10%]" />
+              <col className="w-[12%]" />
+              <col className="w-[35%]" />
               <col className="w-[13%]" />
             </colgroup>
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -307,6 +308,13 @@ export default function ReviewsSection({
                 <SortableHeader
                   field="overall_rating"
                   label="Rating"
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  field="channel"
+                  label="Channel"
                   sortField={sortField}
                   sortDirection={sortDirection}
                   onSort={handleSort}
@@ -351,6 +359,11 @@ export default function ReviewsSection({
                         {review.overall_rating.toFixed(1)}
                       </span>
                     </div>
+                  </td>
+                  <td className="py-3 px-6">
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                      {(review as any).channel?.name || 'Unknown'}
+                    </span>
                   </td>
                   <td className="py-3 px-6 text-gray-700">
                     <p className="truncate max-w-full" title={review.public_review}>

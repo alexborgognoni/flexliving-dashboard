@@ -29,7 +29,7 @@ export const normalizeHostawayReview = (hostawayReview: HostawayReview, properti
     return {
         id: hostawayReview.id.toString(),
         review_type: hostawayReview.type,
-        status: hostawayReview.status,
+        status: hostawayReview.status === 'published' ? 'published' : 'unpublished',
         submitted_at: new Date(hostawayReview.submittedAt).toISOString(),
         guest_id: guest ? guest.id.toString() : 'unknown',
         listing_id: property ? property.id : 'unknown',

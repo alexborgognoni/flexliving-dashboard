@@ -10,6 +10,10 @@ interface Review {
   overall_rating: number;
   public_review: string;
   status: string;
+  channel?: {
+    name: string;
+    review_id: string;
+  };
   ratings: {
     cleanliness?: number;
     communication?: number;
@@ -93,7 +97,14 @@ export default function ReviewDetailsPopover({
       >
         {/* Header */}
         <div className="bg-[#2d5a4d] px-6 py-4 flex items-center justify-between">
-          <h3 className="text-xl font-medium text-white">Review Details</h3>
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl font-medium text-white">Review Details</h3>
+            {review.channel && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/20 text-white capitalize">
+                {review.channel.name}
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-4">
             {/* Status Banner + Toggle */}
             <div className="flex items-center gap-4 bg-white/10 px-4 py-2 rounded-xl shadow-sm min-w-[180px] justify-between">
