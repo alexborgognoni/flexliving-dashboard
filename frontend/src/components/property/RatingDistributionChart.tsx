@@ -5,7 +5,6 @@ import {
   Cell,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
@@ -33,7 +32,6 @@ export default function RatingDistributionChart({ data = [] }: RatingDistributio
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f8f9fa" />
               <XAxis
                 dataKey="rating"
                 tick={{ fontSize: 12, fill: "#6b7280" }}

@@ -4,7 +4,6 @@ import {
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
@@ -31,7 +30,6 @@ export default function RatingTrendChart({ data = [] }: RatingTrendChartProps) {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f8f9fa" />
               <XAxis
                 dataKey="month"
                 tick={{ fontSize: 12, fill: "#6b7280" }}
