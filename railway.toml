@@ -1,0 +1,5 @@
+[service.backend]
+root = "backend"
+
+[service.frontend]
+root = "frontend"
