@@ -1,6 +1,4 @@
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://REPLACE-WITH-YOUR-RAILWAY-URL.railway.app/api'
-  : 'http://localhost:8000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 // Types matching backend
 export interface Property {

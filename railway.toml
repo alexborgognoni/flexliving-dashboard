@@ -14,4 +14,14 @@ startCommand = "npm start"
 
 [services.backend.variables]
 NODE_ENV = "production"
-PORT = "8000"
+# PORT will be automatically set by Railway
+
+[[services]]
+[services.frontend]
+source = "frontend"
+buildCommand = "npm run build"
+startCommand = "npm start"
+
+[services.frontend.variables]
+# Set this to your Railway backend URL after deployment
+# NEXT_PUBLIC_API_URL = "https://your-backend-url.railway.app/api"
