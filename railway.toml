@@ -1,5 +1,17 @@
-[service.backend]
-root = "backend"
+[build]
+builder = "NIXPACKS"
 
-[service.frontend]
-root = "frontend"
+[deploy]
+startCommand = "npm run start --prefix backend"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[[services]]
+[services.backend]
+source = "backend"
+buildCommand = "npm run build"
+startCommand = "npm start"
+
+[services.backend.variables]
+NODE_ENV = "production"
+PORT = "8000"
