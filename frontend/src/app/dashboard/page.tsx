@@ -8,6 +8,7 @@ import {
   Minus,
   Eye,
   Filter,
+  Home,
 } from "lucide-react";
 import DashboardHeader from "@/components/layout/DashboardHeader";
 import RangeSlider from "@/components/ui/RangeSlider";
@@ -20,6 +21,28 @@ interface PropertyWithReviews extends PropertyWithNames {
   reviewCount: number;
   averageRating: number;
   trend: "up" | "down" | "stable";
+}
+
+// Component for property image with fallback
+function PropertyImage({ src, alt, className }: { src: string; alt: string; className: string }) {
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <>
+      {!imageError ? (
+        <img
+          src={src}
+          alt={alt}
+          className={className}
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <div className="w-16 h-12 bg-gray-100 border-2 border-gray-200 rounded-lg flex items-center justify-center">
+          <Home size={20} className="text-gray-400" />
+        </div>
+      )}
+    </>
+  );
 }
 
 
@@ -314,7 +337,7 @@ export default function DashboardPage() {
                   <tr key={property.id} onClick={() => handlePropertyClick(property)}
                     className={`${idx % 2 === 0 ? "bg-white" : "bg-gray-50/50"} border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors`}>
                     <td className="py-3 px-6 flex items-center gap-4">
-                      <img
+                      <PropertyImage
                         src={property.images[0] || '/placeholder-property.jpg'}
                         alt={property.title}
                         className="w-16 h-12 object-cover rounded-lg shadow-sm"
